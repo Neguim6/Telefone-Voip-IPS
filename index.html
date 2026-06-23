@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventário VoIP</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0a0e14; --surface: #121820; --surface2: #1a2330;
+    --border: #233040; --text: #d1d5db; --text2: #8b949e;
+    --heading: #f0f4f8; --accent: #3b82f6; --green: #22c55e; --red: #ef4444;
+    --radius: 10px; --shadow: 0 4px 24px rgba(0,0,0,.4);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg); padding: 24px; color: var(--text); min-height: 100vh;
+}
+.container { max-width: 1440px; margin: 0 auto; }
+.header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+.header h1 { font-size: 22px; font-weight: 700; color: var(--heading); letter-spacing: -0.3px; }
+.header h1 span { color: var(--accent); }
+.header .badge {
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: 20px; font-size: 13px; color: var(--text2);
+}
+.grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+}
+.stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 16px;
+    text-align: center; transition: border-color .2s, transform .2s;
+}
+.stat-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.stat-card .num { font-size: 30px; font-weight: 700; color: var(--heading); line-height: 1.2; }
+.stat-card .num.green { color: var(--green); }
+.stat-card .num.red { color: var(--red); }
+.stat-card .num.blue { color: var(--accent); }
+.stat-card .label {
+    font-size: 12px; color: var(--text2); margin-top: 6px;
+    text-transform: uppercase; letter-spacing: .5px; font-weight: 500;
+}
+.toolbar {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center;
+}
+.toolbar input, .toolbar select {
+    padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 13px; background: var(--surface); color: var(--text); font-family: inherit;
+}
+.toolbar input::placeholder { color: #4a5568; }
+.toolbar input:focus, .toolbar select:focus { outline: none; border-color: var(--accent); }
+.toolbar input { flex: 1; min-width: 200px; }
+.table-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+}
+.table-scroll { overflow-x: auto; max-height: 620px; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead { position: sticky; top: 0; z-index: 2; }
+th {
+    background: var(--surface2); padding: 12px 10px; text-align: left; font-weight: 600;
+    font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: .4px;
+    cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+th:hover { color: var(--text); }
+th::after { content: ' \u2195'; opacity: .3; font-size: 10px; }
+td { padding: 11px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+tbody tr { transition: background .15s; }
+tbody tr:hover { background: rgba(59,130,246,.06); }
+tbody tr:last-child td { border-bottom: none; }
+.status-online { color: var(--green); font-weight: 600; }
+.status-offline { color: var(--red); font-weight: 600; }
+td a { color: var(--accent); text-decoration: none; }
+td a:hover { text-decoration: underline; }
+td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; letter-spacing: -.2px; }
+.footer { text-align: center; margin-top: 24px; color: var(--text2); font-size: 12px; }
+@media (max-width: 768px) {
+    body { padding: 12px; }
+    .header h1 { font-size: 18px; }
+    .grid { grid-template-columns: repeat(3, 1fr); }
+    .stat-card { padding: 14px 10px; }
+    .stat-card .num { font-size: 22px; }
+    table { font-size: 12px; }
+    th, td { padding: 8px 6px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+    <h1><span>VoIP</span> Inventário</h1>
+    <span class="badge">135 registros</span>
+</div>
+<div class="grid">
+    <div class="stat-card"><div class="num blue">135</div><div class="label">Total</div></div>
+    <div class="stat-card"><div class="num green">135</div><div class="label">Online</div></div>
+    <div class="stat-card"><div class="num red">0</div><div class="label">Offline</div></div>
+    <div class="stat-card"><div class="num blue">131</div><div class="label">Setores</div></div>
+    <div class="stat-card"><div class="num blue">2</div><div class="label">Modelos</div></div>
+</div>
+<div class="table-wrap">
+<div class="toolbar" style="padding:12px 16px 0 16px;">
+    <input type="text" id="search" placeholder="Buscar IP, setor, telefone, MAC..." oninput="filter()">
+    <select id="statusFilter" onchange="filter()">
+        <option value="">Status</option>
+        <option value="ONLINE">Online</option>
+        <option value="OFFLINE">Offline</option>
+    </select>
+    <select id="modeloFilter" onchange="filter()">
+        <option value="">Modelo</option>
+                <option value="P10G">P10G</option>
+        <option value="P11G">P11G</option>
+    </select>
+</div>
+<div class="table-scroll">
+<table>
+<thead><tr>
+    <th onclick="sort(0)">IP</th>
+    <th onclick="sort(1)">Setor</th>
+    <th onclick="sort(2)">Telefone</th>
+    <th onclick="sort(3)">Status</th>
+    <th onclick="sort(4)">Modelo</th>
+    <th>MAC</th>
+    <th>Serial</th>
+</tr></thead>
+<tbody id="tbody">
+    <tr>
+        <td><a href="http://10.75.16.67" target="_blank">10.75.16.67</a></td>
+        <td>FARMÁCIA Á HEMODIÁLISE/RETAGUARDA</td>
+        <td>3027-4407</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:F7</td>
+        <td class="mono">FLY15225800419</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.57" target="_blank">10.75.16.57</a></td>
+        <td>ESCRITURÁRIOS – PS ADULTO</td>
+        <td>3027-5197</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:A9</td>
+        <td class="mono">FLY15225800636</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.153" target="_blank">10.75.16.153</a></td>
+        <td>SSEPT 3º PISO</td>
+        <td>3027-5643</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:35</td>
+        <td class="mono">FLY15225800578</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.119" target="_blank">10.75.16.119</a></td>
+        <td>PSICOLOGIA – PS ADULTO</td>
+        <td>3027-4677</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:7B</td>
+        <td class="mono">FLY15225800613</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.114" target="_blank">10.75.16.114</a></td>
+        <td>PSICOLOGIA – CONSULTÓRIO NUAVE</td>
+        <td>3027-4409</td>
+        <td class="status-online">ONLINE</td>
+        <td>P10G</td>
+        <td class="mono">00:21:F2:47:D7:9B</td>
+        <td class="mono">FLY14823700540</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.154" target="_blank">10.75.16.154</a></td>
+        <td>COORDENAÇÃO DE ENFERMAGEM</td>
+        <td>3027-4713</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:11</td>
+        <td class="mono">FLY15225800432</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.146" target="_blank">10.75.16.146</a></td>
+        <td>NIR ENFERMAGEM</td>
+        <td>3027-5278</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:61</td>
+        <td class="mono">FLY15225800600</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.138" target="_blank">10.75.16.138</a></td>
+        <td>CENTRO CIRÚRGICO</td>
+        <td>3027-5317</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:3B</td>
+        <td class="mono">FLY15225800453</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.182" target="_blank">10.75.16.182</a></td>
+        <td>HEMOCENTRO – CAPTAÇÃO</td>
+        <td>3027-5222</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:55</td>
+        <td class="mono">FLY15225800466</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.196" target="_blank">10.75.16.196</a></td>
+        <td>HEMOCENTRO CAPTAÇÃO DE DOADORES</td>
+        <td>3027-5241</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:4F</td>
+        <td class="mono">FLY15225800463</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.212" target="_blank">10.75.16.212</a></td>
+        <td>HEMOCENTRO – SALA DE ENFERMAGEM</td>
+        <td>3027-5288</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:D5</td>
+        <td class="mono">FLY15225800402</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.205" target="_blank">10.75.16.205</a></td>
+        <td>HEMOCENTRO – AMBULATORIO (RESSARCIMENTO)</td>
+        <td>3027-5225</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:F1</td>
+        <td class="mono">FLY15225800416</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.203" target="_blank">10.75.16.203</a></td>
+        <td>HEMOCENTRO – CONSULTÓRIO</td>
+        <td>3027-5242</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:51</td>
+        <td class="mono">FLY15225800464</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.184" target="_blank">10.75.16.184</a></td>
+        <td>LIBERAÇÃO DE OBITOS</td>
+        <td>3027-5274</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6B:FD</td>
+        <td class="mono">FLY15225800934</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.218" target="_blank">10.75.16.218</a></td>
+        <td>MANUTENÇÃO PREDIAL – COORDENAÇÃO/FISCAL</td>
+        <td>3027-5280</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6A:11</td>
+        <td class="mono">FLY15225800688</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.16.186" target="_blank">10.75.16.186</a></td>
+        <td>VIGILANTES (EXCLUSIVO PARA ACIONAR O SERVIÇO)</td>
+        <td>3027-5474</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6A:51</td>
+        <td class="mono">FLY15225800720</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.17.3" target="_blank">10.75.17.3</a></td>
+        <td>CUIDADOS PALIATIVOS</td>
+        <td>3027-5268</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:AD</td>
+        <td class="mono">FLY15225800510</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.17.99" target="_blank">10.75.17.99</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA L (ORTOPEDIA)</td>
+        <td>3027-5212</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:01</td>
+        <td class="mono">FLY15225800424</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.17.116" target="_blank">10.75.17.116</a></td>
+        <td>FARMÁCIA - CAF</td>
+        <td>3027-5275</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:2B</td>
+        <td class="mono">FLY15225800573</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.17.120" target="_blank">10.75.17.120</a></td>
+        <td>FARMÁCIA - 1º PISO</td>
+        <td>3027-5306</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:BD</td>
+        <td class="mono">FLY15225800518</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.17.90" target="_blank">10.75.17.90</a></td>
+        <td>SERVIÇO SOCIAL - INTERNAÇÃO</td>
+        <td>3027-5311</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:77</td>
+        <td class="mono">FLY15225800483</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.17.178" target="_blank">10.75.17.178</a></td>
+        <td>HUMANIZAÇÃO – SERVIÇO VOLUTÁRIO E CAPELANIA</td>
+        <td>3027-5649</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:DB</td>
+        <td class="mono">FLY15225800405</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.18.62" target="_blank">10.75.18.62</a></td>
+        <td>RETAGUARDA</td>
+        <td>3027-5326</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:87</td>
+        <td class="mono">FLY15225800619</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.18.72" target="_blank">10.75.18.72</a></td>
+        <td>NUCLEO SEGURANÇA DO PACIENTE E VIGILÂNCIA DE RISCO</td>
+        <td>3027-5258</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:51</td>
+        <td class="mono">FLY15225800592</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.18.103" target="_blank">10.75.18.103</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA PSIQUIÁTRICA (MASCULINA)</td>
+        <td>3027-5313</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6A:0B</td>
+        <td class="mono">FLY15225800685</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.18.170" target="_blank">10.75.18.170</a></td>
+        <td>CENTRO CIRURGICO - RPA</td>
+        <td>3027-5316</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:39</td>
+        <td class="mono">FLY15225800452</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.18.234" target="_blank">10.75.18.234</a></td>
+        <td>CIRÚRGIA ELETIVA - ADULTO</td>
+        <td>3027-5319</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:3D</td>
+        <td class="mono">FLY15225800454</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.19.90" target="_blank">10.75.19.90</a></td>
+        <td>AMBULATORIO ESPECIALIDADES ADULTO - CENTRO DE INFUSÃO</td>
+        <td>3027-5204</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:C3</td>
+        <td class="mono">FLY15225800521</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.19.201" target="_blank">10.75.19.201</a></td>
+        <td>NIR – SERVIÇO SOCIAL</td>
+        <td>3027-5250</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:4F</td>
+        <td class="mono">FLY15225800591</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.20.69" target="_blank">10.75.20.69</a></td>
+        <td>TRANSPORTE</td>
+        <td>3027-5260</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:B3</td>
+        <td class="mono">FLY15225800513</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.20.72" target="_blank">10.75.20.72</a></td>
+        <td>COMISSÃO DE ÓBITO</td>
+        <td>3027-5284</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:49</td>
+        <td class="mono">FLY15225800460</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.20.71" target="_blank">10.75.20.71</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA N (NEFROLOGIA)</td>
+        <td>3027-5271</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:0B</td>
+        <td class="mono">FLY15225800557</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.20.136" target="_blank">10.75.20.136</a></td>
+        <td>AMBULATÓRIO ONCOLOGIA - UNACON</td>
+        <td>3027-5290</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:54:BA:93</td>
+        <td class="mono">FLY15224C00404</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.20.202" target="_blank">10.75.20.202</a></td>
+        <td>NASST</td>
+        <td>3027-4681</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:59</td>
+        <td class="mono">FLY15225800596</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.20.212" target="_blank">10.75.20.212</a></td>
+        <td>BIOPSIA (NECROTÉRIO)</td>
+        <td>3027-5282</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:47</td>
+        <td class="mono">FLY15225800459</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.20.224" target="_blank">10.75.20.224</a></td>
+        <td>RH</td>
+        <td>3027-5292</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:81</td>
+        <td class="mono">FLY15225800616</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.20.244" target="_blank">10.75.20.244</a></td>
+        <td>FARMÁCIA – ONCOLOGIA (UNACON)</td>
+        <td>3027-5285</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:57</td>
+        <td class="mono">FLY15225800595</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.63" target="_blank">10.75.21.63</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA PSIQUIÁTRICA (FEMININA)</td>
+        <td>3027-5312</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6A:0F</td>
+        <td class="mono">FLY15225800687</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.88" target="_blank">10.75.21.88</a></td>
+        <td>QUIMIOTERAPIA – UNACON</td>
+        <td>3027-4736</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:93</td>
+        <td class="mono">FLY15225800497</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.114" target="_blank">10.75.21.114</a></td>
+        <td>UIR</td>
+        <td>3027-5277</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:79</td>
+        <td class="mono">FLY15225800612</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.111" target="_blank">10.75.21.111</a></td>
+        <td>TOMOGRAFIA 2</td>
+        <td>3027-4406</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:0D</td>
+        <td class="mono">FLY15225800942</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.124" target="_blank">10.75.21.124</a></td>
+        <td>SERVIÇO SOCIAL – UIR/UAVC/PO – ALTA COMPLEXIDADE</td>
+        <td>3027-5244</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:AF</td>
+        <td class="mono">FLY15225800511</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.150" target="_blank">10.75.21.150</a></td>
+        <td>SERVIÇO SOCIAL – 3º PISO</td>
+        <td>3027-4701</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:0D</td>
+        <td class="mono">FLY15225800430</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.179" target="_blank">10.75.21.179</a></td>
+        <td>SALA VERDE 3 - PS</td>
+        <td>3027-5257</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:85</td>
+        <td class="mono">FLY15225800490</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.178" target="_blank">10.75.21.178</a></td>
+        <td>ASSESSORIA DE IMPRENSA</td>
+        <td>3027-4712</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:CB</td>
+        <td class="mono">FLY15225800525</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.180" target="_blank">10.75.21.180</a></td>
+        <td>SERVIÇO SOCIAL - OBSERVAÇÕES</td>
+        <td>3027-5202</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:73</td>
+        <td class="mono">FLY15225800481</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.186" target="_blank">10.75.21.186</a></td>
+        <td>AMBULATORIO ESPECIALIDADES ADULTO - RECEPÇÃO</td>
+        <td>3027-4738</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:C7</td>
+        <td class="mono">FLY15225800523</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.220" target="_blank">10.75.21.220</a></td>
+        <td>NEP</td>
+        <td>3027-5318</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:5D</td>
+        <td class="mono">FLY15225800598</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.222" target="_blank">10.75.21.222</a></td>
+        <td>NUTRIÇÃO CLINICA</td>
+        <td>3027-5272</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:91</td>
+        <td class="mono">FLY15225800496</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.197" target="_blank">10.75.21.197</a></td>
+        <td>SALA VERDE 1 - PS</td>
+        <td>3027-5321</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:7D</td>
+        <td class="mono">FLY15225800486</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.196" target="_blank">10.75.21.196</a></td>
+        <td>AMBULATORIO ESPECIALIDADES ADULTO - COORD ENFERMAGEM</td>
+        <td>3027-5206</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:C5</td>
+        <td class="mono">FLY15225800522</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.205" target="_blank">10.75.21.205</a></td>
+        <td>INTERNAÇÃO - PRESCRIÇÃO MÉDICA</td>
+        <td>3027-5307</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:19</td>
+        <td class="mono">FLY15225800436</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.255" target="_blank">10.75.21.255</a></td>
+        <td>ORTOPEDIA – COORDENAÇÃO</td>
+        <td>3027-5273</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:99</td>
+        <td class="mono">FLY15225800500</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.209" target="_blank">10.75.21.209</a></td>
+        <td>AMBULATORIO ESPECIALIDADES ADULTO - AGENDAMENTO</td>
+        <td>3027-5240</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:D5</td>
+        <td class="mono">FLY15225800530</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.211" target="_blank">10.75.21.211</a></td>
+        <td>SALA VERMELHA / AMARELA - PS</td>
+        <td>3027-5267</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:7F</td>
+        <td class="mono">FLY15225800487</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.210" target="_blank">10.75.21.210</a></td>
+        <td>SALA VERDE 2 - PS</td>
+        <td>3027-5269</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:83</td>
+        <td class="mono">FLY15225800489</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.223" target="_blank">10.75.21.223</a></td>
+        <td>FARMÁCIA - PS</td>
+        <td>3027-5217</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:1D</td>
+        <td class="mono">FLY15225800438</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.225" target="_blank">10.75.21.225</a></td>
+        <td>ACOLHIMENTO CLASSIFICAÇÃO DE RISCO</td>
+        <td>3027-5219</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:17</td>
+        <td class="mono">FLY15225800435</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.236" target="_blank">10.75.21.236</a></td>
+        <td>SALA VERMELHA</td>
+        <td>3027-5229</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:85</td>
+        <td class="mono">FLY15225800618</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.247" target="_blank">10.75.21.247</a></td>
+        <td>AGENCIA TRANSFUSIONAL</td>
+        <td>3027-5315</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:D1</td>
+        <td class="mono">FLY15225800528</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.246" target="_blank">10.75.21.246</a></td>
+        <td>ALMOXARIFADO</td>
+        <td>3027-5276</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:D3</td>
+        <td class="mono">FLY15225800529</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.248" target="_blank">10.75.21.248</a></td>
+        <td>RX</td>
+        <td>3027-5218</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:79</td>
+        <td class="mono">FLY15225800484</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.251" target="_blank">10.75.21.251</a></td>
+        <td>SERVIÇO SOCIAL - PS (ALTA RESPONSÁVEL)</td>
+        <td>3027-5266</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:75</td>
+        <td class="mono">FLY15225800482</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.249" target="_blank">10.75.21.249</a></td>
+        <td>INTERNAÇÃO - POSTO DE ENFERMAGEM</td>
+        <td>3027-5308</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:1B</td>
+        <td class="mono">FLY15225800437</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.252" target="_blank">10.75.21.252</a></td>
+        <td>ELETROENCEFALOGRAMA</td>
+        <td>3027-4739</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:0F</td>
+        <td class="mono">FLY15225800431</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.21.253" target="_blank">10.75.21.253</a></td>
+        <td>RECEPÇÃO PS</td>
+        <td>3027-5200</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:1F</td>
+        <td class="mono">FLY15225800439</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.0" target="_blank">10.75.22.0</a></td>
+        <td>AMBULATÓRIO DE PEDIATRIA</td>
+        <td>3027-5256</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:15</td>
+        <td class="mono">FLY15225800434</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.2" target="_blank">10.75.22.2</a></td>
+        <td>SERVIÇO SOCIAL – AMBULATÓRIO PEDIÁTRICO</td>
+        <td>3027-4710</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:7B</td>
+        <td class="mono">FLY15225800485</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.4" target="_blank">10.75.22.4</a></td>
+        <td>ADMISSÃO E ALTA</td>
+        <td>3027-5310</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:CF</td>
+        <td class="mono">FLY15225800527</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.44" target="_blank">10.75.22.44</a></td>
+        <td>PSICOLOGIA – 4º PISO</td>
+        <td>3027-5226</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:A3</td>
+        <td class="mono">FLY15225800633</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.43" target="_blank">10.75.22.43</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA M (ONCOLOGIA)</td>
+        <td>3027-5210</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:0F</td>
+        <td class="mono">FLY15225800559</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.6" target="_blank">10.75.22.6</a></td>
+        <td>PÓS OPERATÓRIO DE ALTA COMPLEXIDADE</td>
+        <td>3027-5201</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:89</td>
+        <td class="mono">FLY15225800492</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.7" target="_blank">10.75.22.7</a></td>
+        <td>ADMISSÃO E ALTA</td>
+        <td>3027-5304</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:CD</td>
+        <td class="mono">FLY15225800526</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.12" target="_blank">10.75.22.12</a></td>
+        <td>ULTRASSONOGRAFIA</td>
+        <td>3027-5265</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:81</td>
+        <td class="mono">FLY15225800488</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.49" target="_blank">10.75.22.49</a></td>
+        <td>RECEPÇÃO – COORDENAÇÃO</td>
+        <td>3027-5247</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:0F</td>
+        <td class="mono">FLY15225800943</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.14" target="_blank">10.75.22.14</a></td>
+        <td>CIRURGIA ELETIVA</td>
+        <td>3027-5320</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:13</td>
+        <td class="mono">FLY15225800433</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.13" target="_blank">10.75.22.13</a></td>
+        <td>OPME</td>
+        <td>3027-5253</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:95</td>
+        <td class="mono">FLY15225800498</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.16" target="_blank">10.75.22.16</a></td>
+        <td>FINANCEIRO</td>
+        <td>3027-5297</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6B:FF</td>
+        <td class="mono">FLY15225800935</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.15" target="_blank">10.75.22.15</a></td>
+        <td>OUVIDORIA</td>
+        <td>3027-5227</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:8B</td>
+        <td class="mono">FLY15225800493</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.17" target="_blank">10.75.22.17</a></td>
+        <td>CPD</td>
+        <td>3027-5205</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:AB</td>
+        <td class="mono">FLY15225800509</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.20" target="_blank">10.75.22.20</a></td>
+        <td>DIRETORIA - SECRETÁRIAS</td>
+        <td>3027-5300</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:9B</td>
+        <td class="mono">FLY15225800501</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.19" target="_blank">10.75.22.19</a></td>
+        <td>ASSESSORIA JURIDICA</td>
+        <td>3027-5299</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:37</td>
+        <td class="mono">FLY15225800451</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.18" target="_blank">10.75.22.18</a></td>
+        <td>FATURAMENTO</td>
+        <td>3027-5294</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:09</td>
+        <td class="mono">FLY15225800940</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.30" target="_blank">10.75.22.30</a></td>
+        <td>COZINHA - PRODUÇÃO</td>
+        <td>3027-5289</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:A7</td>
+        <td class="mono">FLY15225800507</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.21" target="_blank">10.75.22.21</a></td>
+        <td>CIHDOTT</td>
+        <td>3027-4707</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:3F</td>
+        <td class="mono">FLY15225800455</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.22" target="_blank">10.75.22.22</a></td>
+        <td>RH</td>
+        <td>3027-5296</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:27</td>
+        <td class="mono">FLY15225800571</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.23" target="_blank">10.75.22.23</a></td>
+        <td>CENTRAL DA QUALIDADE</td>
+        <td>3027-4401</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:9D</td>
+        <td class="mono">FLY15225800502</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.24" target="_blank">10.75.22.24</a></td>
+        <td>SALA DE MEDICAÇÃO – II</td>
+        <td>3027-4708</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:AD</td>
+        <td class="mono">FLY15225800638</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.26" target="_blank">10.75.22.26</a></td>
+        <td>RH</td>
+        <td>3027-5298</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:29</td>
+        <td class="mono">FLY15225800572</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.28" target="_blank">10.75.22.28</a></td>
+        <td>SALA DE MEDICAÇÃO – I</td>
+        <td>3027-4709</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:83</td>
+        <td class="mono">FLY15225800617</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.25" target="_blank">10.75.22.25</a></td>
+        <td>SALA DE MEDICAÇÃO – III</td>
+        <td>3027-5232</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:B1</td>
+        <td class="mono">FLY15225800640</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.27" target="_blank">10.75.22.27</a></td>
+        <td>SALA AMARELA</td>
+        <td>3027-5233</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:89</td>
+        <td class="mono">FLY15225800620</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.34" target="_blank">10.75.22.34</a></td>
+        <td>UAVC</td>
+        <td>3027-5302</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:7D</td>
+        <td class="mono">FLY15225800614</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.32" target="_blank">10.75.22.32</a></td>
+        <td>RECEPÇÃO</td>
+        <td>3027-4694</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:77</td>
+        <td class="mono">FLY15225800611</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.35" target="_blank">10.75.22.35</a></td>
+        <td>RECEPÇÃO – ADMINISTRAÇÃO</td>
+        <td>3027-5323</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:2F</td>
+        <td class="mono">FLY15225800575</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.39" target="_blank">10.75.22.39</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA P (ESPECIALIDADES)</td>
+        <td>3027-5209</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6A:07</td>
+        <td class="mono">FLY15225800683</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.38" target="_blank">10.75.22.38</a></td>
+        <td>ESCRITURÁRIOS – 4º PISO</td>
+        <td>3027-5207</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:05</td>
+        <td class="mono">FLY15225800938</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.40" target="_blank">10.75.22.40</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA O (ESPECIALIDADES)</td>
+        <td>3027-5208</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6A:03</td>
+        <td class="mono">FLY15225800681</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.41" target="_blank">10.75.22.41</a></td>
+        <td>FARMÁCIA – 4º PISO</td>
+        <td>3027-5270</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:ED</td>
+        <td class="mono">FLY15225800414</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.47" target="_blank">10.75.22.47</a></td>
+        <td>MANUTENÇÃO PREDIAL – PLANTONISTAS</td>
+        <td>3027-5254</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6A:15</td>
+        <td class="mono">FLY15225800690</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.50" target="_blank">10.75.22.50</a></td>
+        <td>SERVIÇO SOCIAL – 1º PISO (PSIQUIATRIA)</td>
+        <td>3027-5309</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:05</td>
+        <td class="mono">FLY15225800426</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.52" target="_blank">10.75.22.52</a></td>
+        <td>LAVANDERIA</td>
+        <td>3027-5255</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:09</td>
+        <td class="mono">FLY15225800556</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.53" target="_blank">10.75.22.53</a></td>
+        <td>LIMPEZA E HIGIENIZAÇÃO – LÍDERES PLANTONISTAS</td>
+        <td>3027-5261</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6A:05</td>
+        <td class="mono">FLY15225800682</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.54" target="_blank">10.75.22.54</a></td>
+        <td>SAVI</td>
+        <td>3027-5305</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:31</td>
+        <td class="mono">FLY15225800576</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.55" target="_blank">10.75.22.55</a></td>
+        <td>RESSONÂNCIA</td>
+        <td>3027-5251</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:13</td>
+        <td class="mono">FLY15225800945</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.57" target="_blank">10.75.22.57</a></td>
+        <td>CONSULTÓRIO</td>
+        <td>3027-4711</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:11</td>
+        <td class="mono">FLY15225800944</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.58" target="_blank">10.75.22.58</a></td>
+        <td>SAD/EMAD</td>
+        <td>3027-5259</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:2D</td>
+        <td class="mono">FLY15225800574</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.59" target="_blank">10.75.22.59</a></td>
+        <td>ESCRITURÁRIOS – 1º PISO</td>
+        <td>3027-4703</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:07</td>
+        <td class="mono">FLY15225800939</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.60" target="_blank">10.75.22.60</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA C</td>
+        <td>3027-5314</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:15</td>
+        <td class="mono">FLY15225800946</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.61" target="_blank">10.75.22.61</a></td>
+        <td>HEMOCENTRO – AMBULATÓRIO HEMATO RECEPÇÃO</td>
+        <td>3027-5223</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:5D</td>
+        <td class="mono">FLY15225800470</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.64" target="_blank">10.75.22.64</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA EF (NEUROLOGIA)</td>
+        <td>3027-5264</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:19</td>
+        <td class="mono">FLY15225800948</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.62" target="_blank">10.75.22.62</a></td>
+        <td>HEMOCENTRO – SERVIÇO SOCIAL</td>
+        <td>3027-5286</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:D3</td>
+        <td class="mono">FLY15225800401</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.66" target="_blank">10.75.22.66</a></td>
+        <td>LACTÁRIO</td>
+        <td>3027-5291</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:0D</td>
+        <td class="mono">FLY15225800558</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.68" target="_blank">10.75.22.68</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA G (CLINICA MÉDICA)</td>
+        <td>3027-5215</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:1D</td>
+        <td class="mono">FLY15225800950</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.70" target="_blank">10.75.22.70</a></td>
+        <td>FARMÁCIA – PS ADULTO</td>
+        <td>3027-5322</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:E7</td>
+        <td class="mono">FLY15225800411</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.69" target="_blank">10.75.22.69</a></td>
+        <td>HEMOCENTRO – RECEPÇÃO</td>
+        <td>3027-5221</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:E5</td>
+        <td class="mono">FLY15225800410</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.71" target="_blank">10.75.22.71</a></td>
+        <td>ENDOSCOPIA</td>
+        <td>3027-5642</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:E3</td>
+        <td class="mono">FLY15225800409</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.78" target="_blank">10.75.22.78</a></td>
+        <td>GESTÃO DE CONTRATOS</td>
+        <td>3027-4723</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:F3</td>
+        <td class="mono">FLY15225800417</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.72" target="_blank">10.75.22.72</a></td>
+        <td>SERVIÇOS DE APOIO</td>
+        <td>3027-4700</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:39</td>
+        <td class="mono">FLY15225800580</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.75" target="_blank">10.75.22.75</a></td>
+        <td>HEMODINAMICA</td>
+        <td>3027-5248</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:5B</td>
+        <td class="mono">FLY15225800469</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.76" target="_blank">10.75.22.76</a></td>
+        <td>HEMOCENTRO – AMBULATÓRIO ADMINISTRATIVO</td>
+        <td>3027-5224</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:4D</td>
+        <td class="mono">FLY15225800462</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.79" target="_blank">10.75.22.79</a></td>
+        <td>FARMÁCIA UIR/UAVC/PO-GP</td>
+        <td>3027-5283</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:F5</td>
+        <td class="mono">FLY15225800418</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.80" target="_blank">10.75.22.80</a></td>
+        <td>FARMACIA CENTRO CIRURGICO</td>
+        <td>3027-5648</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:67:EB</td>
+        <td class="mono">FLY15225800413</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.82" target="_blank">10.75.22.82</a></td>
+        <td>HEMODIÁLISE</td>
+        <td>3027-5263</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:57</td>
+        <td class="mono">FLY15225800467</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.81" target="_blank">10.75.22.81</a></td>
+        <td>ENGENHARIA CLINICA - PLANTONISTAS</td>
+        <td>3027-4702</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:9F</td>
+        <td class="mono">FLY15225800503</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.88" target="_blank">10.75.22.88</a></td>
+        <td>PATRIMÔNIO</td>
+        <td>3027-5220</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:A1</td>
+        <td class="mono">FLY15225800504</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.87" target="_blank">10.75.22.87</a></td>
+        <td>PORTARIA</td>
+        <td>3027-4400</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:7F</td>
+        <td class="mono">FLY15225800615</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.89" target="_blank">10.75.22.89</a></td>
+        <td>COMPRAS</td>
+        <td>3027-5287</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:A5</td>
+        <td class="mono">FLY15225800506</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.90" target="_blank">10.75.22.90</a></td>
+        <td>SERVIÇO SOCIAL – PS ADULTO</td>
+        <td>3027-5198</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:BB</td>
+        <td class="mono">FLY15225800517</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.92" target="_blank">10.75.22.92</a></td>
+        <td>NUCLEO VIGILÂNCIA EPIDEMIOLÓGICA</td>
+        <td>3027-5228</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:55</td>
+        <td class="mono">FLY15225800594</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.102" target="_blank">10.75.22.102</a></td>
+        <td>BANCO DE OLHOS - BOTO</td>
+        <td>3027-5236</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:68:43</td>
+        <td class="mono">FLY15225800457</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.103" target="_blank">10.75.22.103</a></td>
+        <td>ESCRITURÁRIOS – 2º PISO</td>
+        <td>3027-4695</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:6C:03</td>
+        <td class="mono">FLY15225800937</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.99" target="_blank">10.75.22.99</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA J (ORTOPEDIA)</td>
+        <td>3027-5213</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:03</td>
+        <td class="mono">FLY15225800553</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.107" target="_blank">10.75.22.107</a></td>
+        <td>COORDENAÇÃO DE ENFERMAGEM</td>
+        <td>3027-5230</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:A7</td>
+        <td class="mono">FLY15225800635</td>
+    </tr>
+    <tr>
+        <td><a href="http://10.75.22.109" target="_blank">10.75.22.109</a></td>
+        <td>UNIDADE DE INTERNAÇÃO – ALA I (ORTOPEDIA)</td>
+        <td>3027-5214</td>
+        <td class="status-online">ONLINE</td>
+        <td>P11G</td>
+        <td class="mono">00:21:F2:5A:69:01</td>
+        <td class="mono">FLY15225800552</td>
+    </tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="footer">Atualizado em 23/06/2026 16:52</div>
+</div>
+<script>
+const data = [{"IP": "10.75.16.67", "Setor": "FARM\u00c1CIA \u00c1 HEMODI\u00c1LISE/RETAGUARDA", "Telefone": "3027-4407", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:F7", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800419"}, {"IP": "10.75.16.57", "Setor": "ESCRITUR\u00c1RIOS \u2013 PS ADULTO", "Telefone": "3027-5197", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:A9", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800636"}, {"IP": "10.75.16.153", "Setor": "SSEPT 3\u00ba PISO", "Telefone": "3027-5643", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:35", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800578"}, {"IP": "10.75.16.119", "Setor": "PSICOLOGIA \u2013 PS ADULTO", "Telefone": "3027-4677", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:7B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800613"}, {"IP": "10.75.16.114", "Setor": "PSICOLOGIA \u2013 CONSULT\u00d3RIO NUAVE", "Telefone": "3027-4409", "Status": "ONLINE", "Nome do Produto": "P10G", "MAC": "00:21:F2:47:D7:9B", "Hardware": "V1.0.1.1.2.0.1", "Firmware": "FVUI V0.11.6(202411022003)", "Serial": "FLY14823700540"}, {"IP": "10.75.16.154", "Setor": "COORDENA\u00c7\u00c3O DE ENFERMAGEM", "Telefone": "3027-4713", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:11", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800432"}, {"IP": "10.75.16.146", "Setor": "NIR ENFERMAGEM", "Telefone": "3027-5278", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:61", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800600"}, {"IP": "10.75.16.138", "Setor": "CENTRO CIR\u00daRGICO", "Telefone": "3027-5317", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:3B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800453"}, {"IP": "10.75.16.182", "Setor": "HEMOCENTRO \u2013 CAPTA\u00c7\u00c3O", "Telefone": "3027-5222", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:55", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800466"}, {"IP": "10.75.16.196", "Setor": "HEMOCENTRO CAPTA\u00c7\u00c3O DE DOADORES", "Telefone": "3027-5241", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:4F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800463"}, {"IP": "10.75.16.212", "Setor": "HEMOCENTRO \u2013 SALA DE ENFERMAGEM", "Telefone": "3027-5288", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:D5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800402"}, {"IP": "10.75.16.205", "Setor": "HEMOCENTRO \u2013 AMBULATORIO (RESSARCIMENTO)", "Telefone": "3027-5225", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:F1", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800416"}, {"IP": "10.75.16.203", "Setor": "HEMOCENTRO \u2013 CONSULT\u00d3RIO", "Telefone": "3027-5242", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:51", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800464"}, {"IP": "10.75.16.184", "Setor": "LIBERA\u00c7\u00c3O DE OBITOS", "Telefone": "3027-5274", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6B:FD", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800934"}, {"IP": "10.75.16.218", "Setor": "MANUTEN\u00c7\u00c3O PREDIAL \u2013 COORDENA\u00c7\u00c3O/FISCAL", "Telefone": "3027-5280", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:11", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800688"}, {"IP": "10.75.16.186", "Setor": "VIGILANTES (EXCLUSIVO PARA ACIONAR O SERVI\u00c7O)", "Telefone": "3027-5474", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:51", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800720"}, {"IP": "10.75.17.3", "Setor": "CUIDADOS PALIATIVOS", "Telefone": "3027-5268", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:AD", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800510"}, {"IP": "10.75.17.99", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA L (ORTOPEDIA)", "Telefone": "3027-5212", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:01", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800424"}, {"IP": "10.75.17.116", "Setor": "FARM\u00c1CIA - CAF", "Telefone": "3027-5275", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:2B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800573"}, {"IP": "10.75.17.120", "Setor": "FARM\u00c1CIA - 1\u00ba PISO", "Telefone": "3027-5306", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:BD", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800518"}, {"IP": "10.75.17.90", "Setor": "SERVI\u00c7O SOCIAL - INTERNA\u00c7\u00c3O", "Telefone": "3027-5311", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:77", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800483"}, {"IP": "10.75.17.178", "Setor": "HUMANIZA\u00c7\u00c3O \u2013 SERVI\u00c7O VOLUT\u00c1RIO E CAPELANIA", "Telefone": "3027-5649", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:DB", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800405"}, {"IP": "10.75.18.62", "Setor": "RETAGUARDA", "Telefone": "3027-5326", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:87", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800619"}, {"IP": "10.75.18.72", "Setor": "NUCLEO SEGURAN\u00c7A DO PACIENTE E VIGIL\u00c2NCIA DE RISCO", "Telefone": "3027-5258", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:51", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800592"}, {"IP": "10.75.18.103", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA PSIQUI\u00c1TRICA (MASCULINA)", "Telefone": "3027-5313", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:0B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800685"}, {"IP": "10.75.18.170", "Setor": "CENTRO CIRURGICO - RPA", "Telefone": "3027-5316", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:39", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800452"}, {"IP": "10.75.18.234", "Setor": "CIR\u00daRGIA ELETIVA - ADULTO", "Telefone": "3027-5319", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:3D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800454"}, {"IP": "10.75.19.90", "Setor": "AMBULATORIO ESPECIALIDADES ADULTO - CENTRO DE INFUS\u00c3O", "Telefone": "3027-5204", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:C3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800521"}, {"IP": "10.75.19.201", "Setor": "NIR \u2013 SERVI\u00c7O SOCIAL", "Telefone": "3027-5250", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:4F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800591"}, {"IP": "10.75.20.69", "Setor": "TRANSPORTE", "Telefone": "3027-5260", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:B3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800513"}, {"IP": "10.75.20.72", "Setor": "COMISS\u00c3O DE \u00d3BITO", "Telefone": "3027-5284", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:49", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800460"}, {"IP": "10.75.20.71", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA N (NEFROLOGIA)", "Telefone": "3027-5271", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:0B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800557"}, {"IP": "10.75.20.136", "Setor": "AMBULAT\u00d3RIO ONCOLOGIA - UNACON", "Telefone": "3027-5290", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:54:BA:93", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.10.46(202408231702)", "Serial": "FLY15224C00404"}, {"IP": "10.75.20.202", "Setor": "NASST", "Telefone": "3027-4681", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:59", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800596"}, {"IP": "10.75.20.212", "Setor": "BIOPSIA (NECROT\u00c9RIO)", "Telefone": "3027-5282", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:47", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800459"}, {"IP": "10.75.20.224", "Setor": "RH", "Telefone": "3027-5292", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:81", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800616"}, {"IP": "10.75.20.244", "Setor": "FARM\u00c1CIA \u2013 ONCOLOGIA (UNACON)", "Telefone": "3027-5285", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:57", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800595"}, {"IP": "10.75.21.63", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA PSIQUI\u00c1TRICA (FEMININA)", "Telefone": "3027-5312", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:0F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800687"}, {"IP": "10.75.21.88", "Setor": "QUIMIOTERAPIA \u2013 UNACON", "Telefone": "3027-4736", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:93", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800497"}, {"IP": "10.75.21.114", "Setor": "UIR", "Telefone": "3027-5277", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:79", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800612"}, {"IP": "10.75.21.111", "Setor": "TOMOGRAFIA 2", "Telefone": "3027-4406", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:0D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800942"}, {"IP": "10.75.21.124", "Setor": "SERVI\u00c7O SOCIAL \u2013 UIR/UAVC/PO \u2013 ALTA COMPLEXIDADE", "Telefone": "3027-5244", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:AF", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800511"}, {"IP": "10.75.21.150", "Setor": "SERVI\u00c7O SOCIAL \u2013 3\u00ba PISO", "Telefone": "3027-4701", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:0D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800430"}, {"IP": "10.75.21.179", "Setor": "SALA VERDE 3 - PS", "Telefone": "3027-5257", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:85", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800490"}, {"IP": "10.75.21.178", "Setor": "ASSESSORIA DE IMPRENSA", "Telefone": "3027-4712", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:CB", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800525"}, {"IP": "10.75.21.180", "Setor": "SERVI\u00c7O SOCIAL - OBSERVA\u00c7\u00d5ES", "Telefone": "3027-5202", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:73", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800481"}, {"IP": "10.75.21.186", "Setor": "AMBULATORIO ESPECIALIDADES ADULTO - RECEP\u00c7\u00c3O", "Telefone": "3027-4738", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:C7", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800523"}, {"IP": "10.75.21.220", "Setor": "NEP", "Telefone": "3027-5318", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:5D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800598"}, {"IP": "10.75.21.222", "Setor": "NUTRI\u00c7\u00c3O CLINICA", "Telefone": "3027-5272", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:91", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800496"}, {"IP": "10.75.21.197", "Setor": "SALA VERDE 1 - PS", "Telefone": "3027-5321", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:7D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800486"}, {"IP": "10.75.21.196", "Setor": "AMBULATORIO ESPECIALIDADES ADULTO - COORD ENFERMAGEM", "Telefone": "3027-5206", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:C5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800522"}, {"IP": "10.75.21.205", "Setor": "INTERNA\u00c7\u00c3O - PRESCRI\u00c7\u00c3O M\u00c9DICA", "Telefone": "3027-5307", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:19", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800436"}, {"IP": "10.75.21.255", "Setor": "ORTOPEDIA \u2013 COORDENA\u00c7\u00c3O", "Telefone": "3027-5273", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:99", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800500"}, {"IP": "10.75.21.209", "Setor": "AMBULATORIO ESPECIALIDADES ADULTO - AGENDAMENTO", "Telefone": "3027-5240", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:D5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800530"}, {"IP": "10.75.21.211", "Setor": "SALA VERMELHA / AMARELA - PS", "Telefone": "3027-5267", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:7F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800487"}, {"IP": "10.75.21.210", "Setor": "SALA VERDE 2 - PS", "Telefone": "3027-5269", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:83", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800489"}, {"IP": "10.75.21.223", "Setor": "FARM\u00c1CIA - PS", "Telefone": "3027-5217", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:1D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800438"}, {"IP": "10.75.21.225", "Setor": "ACOLHIMENTO CLASSIFICA\u00c7\u00c3O DE RISCO", "Telefone": "3027-5219", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:17", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800435"}, {"IP": "10.75.21.236", "Setor": "SALA VERMELHA", "Telefone": "3027-5229", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:85", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800618"}, {"IP": "10.75.21.247", "Setor": "AGENCIA TRANSFUSIONAL", "Telefone": "3027-5315", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:D1", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800528"}, {"IP": "10.75.21.246", "Setor": "ALMOXARIFADO", "Telefone": "3027-5276", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:D3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800529"}, {"IP": "10.75.21.248", "Setor": "RX", "Telefone": "3027-5218", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:79", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800484"}, {"IP": "10.75.21.251", "Setor": "SERVI\u00c7O SOCIAL - PS (ALTA RESPONS\u00c1VEL)", "Telefone": "3027-5266", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:75", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800482"}, {"IP": "10.75.21.249", "Setor": "INTERNA\u00c7\u00c3O - POSTO DE ENFERMAGEM", "Telefone": "3027-5308", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:1B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800437"}, {"IP": "10.75.21.252", "Setor": "ELETROENCEFALOGRAMA", "Telefone": "3027-4739", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:0F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800431"}, {"IP": "10.75.21.253", "Setor": "RECEP\u00c7\u00c3O PS", "Telefone": "3027-5200", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:1F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800439"}, {"IP": "10.75.22.0", "Setor": "AMBULAT\u00d3RIO DE PEDIATRIA", "Telefone": "3027-5256", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:15", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800434"}, {"IP": "10.75.22.2", "Setor": "SERVI\u00c7O SOCIAL \u2013 AMBULAT\u00d3RIO PEDI\u00c1TRICO", "Telefone": "3027-4710", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:7B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800485"}, {"IP": "10.75.22.4", "Setor": "ADMISS\u00c3O E ALTA", "Telefone": "3027-5310", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:CF", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800527"}, {"IP": "10.75.22.44", "Setor": "PSICOLOGIA \u2013 4\u00ba PISO", "Telefone": "3027-5226", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:A3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800633"}, {"IP": "10.75.22.43", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA M (ONCOLOGIA)", "Telefone": "3027-5210", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:0F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800559"}, {"IP": "10.75.22.6", "Setor": "P\u00d3S OPERAT\u00d3RIO DE ALTA COMPLEXIDADE", "Telefone": "3027-5201", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:89", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800492"}, {"IP": "10.75.22.7", "Setor": "ADMISS\u00c3O E ALTA", "Telefone": "3027-5304", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:CD", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800526"}, {"IP": "10.75.22.12", "Setor": "ULTRASSONOGRAFIA", "Telefone": "3027-5265", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:81", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800488"}, {"IP": "10.75.22.49", "Setor": "RECEP\u00c7\u00c3O \u2013 COORDENA\u00c7\u00c3O", "Telefone": "3027-5247", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:0F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800943"}, {"IP": "10.75.22.14", "Setor": "CIRURGIA ELETIVA", "Telefone": "3027-5320", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:13", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800433"}, {"IP": "10.75.22.13", "Setor": "OPME", "Telefone": "3027-5253", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:95", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800498"}, {"IP": "10.75.22.16", "Setor": "FINANCEIRO", "Telefone": "3027-5297", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6B:FF", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800935"}, {"IP": "10.75.22.15", "Setor": "OUVIDORIA", "Telefone": "3027-5227", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:8B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800493"}, {"IP": "10.75.22.17", "Setor": "CPD", "Telefone": "3027-5205", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:AB", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800509"}, {"IP": "10.75.22.20", "Setor": "DIRETORIA - SECRET\u00c1RIAS", "Telefone": "3027-5300", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:9B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800501"}, {"IP": "10.75.22.19", "Setor": "ASSESSORIA JURIDICA", "Telefone": "3027-5299", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:37", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800451"}, {"IP": "10.75.22.18", "Setor": "FATURAMENTO", "Telefone": "3027-5294", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:09", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800940"}, {"IP": "10.75.22.30", "Setor": "COZINHA - PRODU\u00c7\u00c3O", "Telefone": "3027-5289", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:A7", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800507"}, {"IP": "10.75.22.21", "Setor": "CIHDOTT", "Telefone": "3027-4707", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:3F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800455"}, {"IP": "10.75.22.22", "Setor": "RH", "Telefone": "3027-5296", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:27", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800571"}, {"IP": "10.75.22.23", "Setor": "CENTRAL DA QUALIDADE", "Telefone": "3027-4401", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:9D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800502"}, {"IP": "10.75.22.24", "Setor": "SALA DE MEDICA\u00c7\u00c3O \u2013 II", "Telefone": "3027-4708", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:AD", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800638"}, {"IP": "10.75.22.26", "Setor": "RH", "Telefone": "3027-5298", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:29", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800572"}, {"IP": "10.75.22.28", "Setor": "SALA DE MEDICA\u00c7\u00c3O \u2013 I", "Telefone": "3027-4709", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:83", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800617"}, {"IP": "10.75.22.25", "Setor": "SALA DE MEDICA\u00c7\u00c3O \u2013 III", "Telefone": "3027-5232", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:B1", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800640"}, {"IP": "10.75.22.27", "Setor": "SALA AMARELA", "Telefone": "3027-5233", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:89", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800620"}, {"IP": "10.75.22.34", "Setor": "UAVC", "Telefone": "3027-5302", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:7D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800614"}, {"IP": "10.75.22.32", "Setor": "RECEP\u00c7\u00c3O", "Telefone": "3027-4694", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:77", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800611"}, {"IP": "10.75.22.35", "Setor": "RECEP\u00c7\u00c3O \u2013 ADMINISTRA\u00c7\u00c3O", "Telefone": "3027-5323", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:2F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800575"}, {"IP": "10.75.22.39", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA P (ESPECIALIDADES)", "Telefone": "3027-5209", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:07", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800683"}, {"IP": "10.75.22.38", "Setor": "ESCRITUR\u00c1RIOS \u2013 4\u00ba PISO", "Telefone": "3027-5207", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:05", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800938"}, {"IP": "10.75.22.40", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA O (ESPECIALIDADES)", "Telefone": "3027-5208", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:03", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800681"}, {"IP": "10.75.22.41", "Setor": "FARM\u00c1CIA \u2013 4\u00ba PISO", "Telefone": "3027-5270", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:ED", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800414"}, {"IP": "10.75.22.47", "Setor": "MANUTEN\u00c7\u00c3O PREDIAL \u2013 PLANTONISTAS", "Telefone": "3027-5254", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:15", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800690"}, {"IP": "10.75.22.50", "Setor": "SERVI\u00c7O SOCIAL \u2013 1\u00ba PISO (PSIQUIATRIA)", "Telefone": "3027-5309", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:05", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800426"}, {"IP": "10.75.22.52", "Setor": "LAVANDERIA", "Telefone": "3027-5255", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:09", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800556"}, {"IP": "10.75.22.53", "Setor": "LIMPEZA E HIGIENIZA\u00c7\u00c3O \u2013 L\u00cdDERES PLANTONISTAS", "Telefone": "3027-5261", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:05", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800682"}, {"IP": "10.75.22.54", "Setor": "SAVI", "Telefone": "3027-5305", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:31", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800576"}, {"IP": "10.75.22.55", "Setor": "RESSON\u00c2NCIA", "Telefone": "3027-5251", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:13", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800945"}, {"IP": "10.75.22.57", "Setor": "CONSULT\u00d3RIO", "Telefone": "3027-4711", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:11", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800944"}, {"IP": "10.75.22.58", "Setor": "SAD/EMAD", "Telefone": "3027-5259", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:2D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800574"}, {"IP": "10.75.22.59", "Setor": "ESCRITUR\u00c1RIOS \u2013 1\u00ba PISO", "Telefone": "3027-4703", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:07", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800939"}, {"IP": "10.75.22.60", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA C", "Telefone": "3027-5314", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:15", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800946"}, {"IP": "10.75.22.61", "Setor": "HEMOCENTRO \u2013 AMBULAT\u00d3RIO HEMATO RECEP\u00c7\u00c3O", "Telefone": "3027-5223", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:5D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800470"}, {"IP": "10.75.22.64", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA EF (NEUROLOGIA)", "Telefone": "3027-5264", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:19", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800948"}, {"IP": "10.75.22.62", "Setor": "HEMOCENTRO \u2013 SERVI\u00c7O SOCIAL", "Telefone": "3027-5286", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:D3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800401"}, {"IP": "10.75.22.66", "Setor": "LACT\u00c1RIO", "Telefone": "3027-5291", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:0D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800558"}, {"IP": "10.75.22.68", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA G (CLINICA M\u00c9DICA)", "Telefone": "3027-5215", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:1D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800950"}, {"IP": "10.75.22.70", "Setor": "FARM\u00c1CIA \u2013 PS ADULTO", "Telefone": "3027-5322", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:E7", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800411"}, {"IP": "10.75.22.69", "Setor": "HEMOCENTRO \u2013 RECEP\u00c7\u00c3O", "Telefone": "3027-5221", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:E5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800410"}, {"IP": "10.75.22.71", "Setor": "ENDOSCOPIA", "Telefone": "3027-5642", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:E3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800409"}, {"IP": "10.75.22.78", "Setor": "GEST\u00c3O DE CONTRATOS", "Telefone": "3027-4723", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:F3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800417"}, {"IP": "10.75.22.72", "Setor": "SERVI\u00c7OS DE APOIO", "Telefone": "3027-4700", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:39", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800580"}, {"IP": "10.75.22.75", "Setor": "HEMODINAMICA", "Telefone": "3027-5248", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:5B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800469"}, {"IP": "10.75.22.76", "Setor": "HEMOCENTRO \u2013 AMBULAT\u00d3RIO ADMINISTRATIVO", "Telefone": "3027-5224", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:4D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800462"}, {"IP": "10.75.22.79", "Setor": "FARM\u00c1CIA UIR/UAVC/PO-GP", "Telefone": "3027-5283", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:F5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800418"}, {"IP": "10.75.22.80", "Setor": "FARMACIA CENTRO CIRURGICO", "Telefone": "3027-5648", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:EB", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800413"}, {"IP": "10.75.22.82", "Setor": "HEMODI\u00c1LISE", "Telefone": "3027-5263", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:57", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800467"}, {"IP": "10.75.22.81", "Setor": "ENGENHARIA CLINICA - PLANTONISTAS", "Telefone": "3027-4702", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:9F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800503"}, {"IP": "10.75.22.88", "Setor": "PATRIM\u00d4NIO", "Telefone": "3027-5220", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:A1", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800504"}, {"IP": "10.75.22.87", "Setor": "PORTARIA", "Telefone": "3027-4400", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:7F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800615"}, {"IP": "10.75.22.89", "Setor": "COMPRAS", "Telefone": "3027-5287", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:A5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800506"}, {"IP": "10.75.22.90", "Setor": "SERVI\u00c7O SOCIAL \u2013 PS ADULTO", "Telefone": "3027-5198", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:BB", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800517"}, {"IP": "10.75.22.92", "Setor": "NUCLEO VIGIL\u00c2NCIA EPIDEMIOL\u00d3GICA", "Telefone": "3027-5228", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:55", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800594"}, {"IP": "10.75.22.102", "Setor": "BANCO DE OLHOS - BOTO", "Telefone": "3027-5236", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:43", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800457"}, {"IP": "10.75.22.103", "Setor": "ESCRITUR\u00c1RIOS \u2013 2\u00ba PISO", "Telefone": "3027-4695", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:03", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800937"}, {"IP": "10.75.22.99", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA J (ORTOPEDIA)", "Telefone": "3027-5213", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:03", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800553"}, {"IP": "10.75.22.107", "Setor": "COORDENA\u00c7\u00c3O DE ENFERMAGEM", "Telefone": "3027-5230", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:A7", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800635"}, {"IP": "10.75.22.109", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA I (ORTOPEDIA)", "Telefone": "3027-5214", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:01", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800552"}];
+function filter() {
+    const q = document.getElementById('search').value.toLowerCase();
+    const st = document.getElementById('statusFilter').value;
+    const mo = document.getElementById('modeloFilter').value;
+    document.querySelectorAll('#tbody tr').forEach(r => {
+        const txt = r.textContent.toLowerCase();
+        const status = r.children[3]?.textContent.trim() || '';
+        let show = true;
+        if (q && !txt.includes(q)) show = false;
+        if (st && status !== st) show = false;
+        if (mo && !txt.includes(mo.toLowerCase())) show = false;
+        r.style.display = show ? '' : 'none';
+    });
+}
+function sort(n) {
+    const tbody = document.getElementById('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    const dir = tbody.dataset.sort === 'asc' ? 'desc' : 'asc';
+    tbody.dataset.sort = dir;
+    rows.sort((a, b) => {
+        const va = a.children[n].textContent.trim();
+        const vb = b.children[n].textContent.trim();
+        const na = parseFloat(va), nb = parseFloat(vb);
+        if (!isNaN(na) && !isNaN(nb)) return dir === 'asc' ? na - nb : nb - na;
+        return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+    rows.forEach(r => tbody.appendChild(r));
+}
+</script>
+</body>
+</html>
