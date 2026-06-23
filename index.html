@@ -6,113 +6,96 @@
 <title>Inventário VoIP</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-    --bg: #0a0e14; --surface: #121820; --surface2: #1a2330;
-    --border: #233040; --text: #d1d5db; --text2: #8b949e;
-    --heading: #f0f4f8; --accent: #3b82f6; --green: #22c55e; --red: #ef4444;
-    --radius: 10px; --shadow: 0 4px 24px rgba(0,0,0,.4);
-}
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: 'Inter', -apple-system, sans-serif;
-    background: var(--bg); padding: 24px; color: var(--text); min-height: 100vh;
-}
+body { font-family: 'Inter', sans-serif; background: #0a0e14; padding: 24px; color: #d1d5db; }
 .container { max-width: 1440px; margin: 0 auto; }
-.header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
-}
-.header h1 { font-size: 22px; font-weight: 700; color: var(--heading); letter-spacing: -0.3px; }
-.header h1 span { color: var(--accent); }
-.header .badge {
-    background: var(--surface2); border: 1px solid var(--border);
-    padding: 6px 14px; border-radius: 20px; font-size: 13px; color: var(--text2);
-}
-.grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px; margin-bottom: 24px;
-}
-.stat-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 20px 16px;
-    text-align: center; transition: border-color .2s, transform .2s;
-}
-.stat-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-.stat-card .num { font-size: 30px; font-weight: 700; color: var(--heading); line-height: 1.2; }
-.stat-card .num.green { color: var(--green); }
-.stat-card .num.red { color: var(--red); }
-.stat-card .num.blue { color: var(--accent); }
-.stat-card .label {
-    font-size: 12px; color: var(--text2); margin-top: 6px;
-    text-transform: uppercase; letter-spacing: .5px; font-weight: 500;
-}
-.toolbar {
-    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center;
-}
-.toolbar input, .toolbar select {
-    padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px;
-    font-size: 13px; background: var(--surface); color: var(--text); font-family: inherit;
-}
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.header h1 { font-size: 22px; font-weight: 700; color: #f0f4f8; }
+.header h1 span { color: #3b82f6; }
+.header .badge { background: #1a2330; border: 1px solid #233040; padding: 6px 14px; border-radius: 20px; font-size: 13px; color: #8b949e; }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat-card { background: #121820; border: 1px solid #233040; border-radius: 10px; padding: 20px 16px; text-align: center; }
+.stat-card .num { font-size: 30px; font-weight: 700; color: #f0f4f8; }
+.stat-card .num.green { color: #22c55e; }
+.stat-card .num.red { color: #ef4444; }
+.stat-card .num.blue { color: #3b82f6; }
+.stat-card .label { font-size: 12px; color: #8b949e; margin-top: 6px; text-transform: uppercase; letter-spacing: .5px; font-weight: 500; }
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.toolbar input, .toolbar select { padding: 9px 14px; border: 1px solid #233040; border-radius: 8px; font-size: 13px; background: #121820; color: #d1d5db; font-family: inherit; }
 .toolbar input::placeholder { color: #4a5568; }
-.toolbar input:focus, .toolbar select:focus { outline: none; border-color: var(--accent); }
-.toolbar input { flex: 1; min-width: 200px; }
-.table-wrap {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden;
-}
+.toolbar input:focus, .toolbar select:focus { outline: none; border-color: #3b82f6; }
+.toolbar input[type="text"] { flex: 1; min-width: 200px; }
+.btn { padding: 9px 18px; border: none; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.btn-primary { background: #3b82f6; color: #fff; }
+.btn-primary:hover { background: #60a5fa; }
+.btn-green { background: #22c55e; color: #fff; }
+.btn-green:hover { background: #16a34a; }
+.btn-outline { background: transparent; color: #8b949e; border: 1px solid #233040; }
+.btn-outline:hover { background: #1a2330; }
+.btn-red { background: #ef4444; color: #fff; }
+.btn-red:hover { background: #dc2626; }
+.table-wrap { background: #121820; border: 1px solid #233040; border-radius: 10px; overflow: hidden; }
 .table-scroll { overflow-x: auto; max-height: 620px; overflow-y: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 thead { position: sticky; top: 0; z-index: 2; }
-th {
-    background: var(--surface2); padding: 12px 10px; text-align: left; font-weight: 600;
-    font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: .4px;
-    cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); white-space: nowrap;
-}
-th:hover { color: var(--text); }
-th::after { content: ' \u2195'; opacity: .3; font-size: 10px; }
-td { padding: 11px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-tbody tr { transition: background .15s; }
+th { background: #1a2330; padding: 12px 10px; text-align: left; font-weight: 600; font-size: 12px; color: #8b949e; text-transform: uppercase; letter-spacing: .4px; cursor: pointer; border-bottom: 1px solid #233040; white-space: nowrap; }
+th:hover { color: #d1d5db; }
+td { padding: 11px 10px; border-bottom: 1px solid #233040; white-space: nowrap; }
 tbody tr:hover { background: rgba(59,130,246,.06); }
-tbody tr:last-child td { border-bottom: none; }
-.status-online { color: var(--green); font-weight: 600; }
-.status-offline { color: var(--red); font-weight: 600; }
-td a { color: var(--accent); text-decoration: none; }
+.status-online { color: #22c55e; font-weight: 600; }
+.status-offline { color: #ef4444; font-weight: 600; }
+td a { color: #3b82f6; text-decoration: none; }
 td a:hover { text-decoration: underline; }
-td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; letter-spacing: -.2px; }
-.footer { text-align: center; margin-top: 24px; color: var(--text2); font-size: 12px; }
-@media (max-width: 768px) {
-    body { padding: 12px; }
-    .header h1 { font-size: 18px; }
-    .grid { grid-template-columns: repeat(3, 1fr); }
-    .stat-card { padding: 14px 10px; }
-    .stat-card .num { font-size: 22px; }
-    table { font-size: 12px; }
-    th, td { padding: 8px 6px; }
-}
+td.mono { font-family: 'SF Mono', monospace; font-size: 12px; }
+.actions { display: flex; gap: 4px; }
+.actions button { padding: 4px 10px; border-radius: 6px; border: 1px solid #233040; background: transparent; color: #8b949e; font-size: 12px; cursor: pointer; font-family: inherit; }
+.actions .edit-btn:hover { border-color: #3b82f6; color: #3b82f6; }
+.actions .del-btn:hover { border-color: #ef4444; color: #ef4444; }
+.modal { display: none; position: fixed; z-index: 99; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,.65); backdrop-filter: blur(4px); }
+.modal-content { background: #121820; margin: 4% auto; padding: 28px; border-radius: 14px; width: 92%; max-width: 520px; border: 1px solid #233040; animation: slideUp .25s ease-out; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.modal h2 { font-size: 18px; font-weight: 700; color: #f0f4f8; margin-bottom: 4px; }
+.modal .sub { color: #8b949e; font-size: 13px; margin-bottom: 20px; }
+.modal label { display: block; margin-top: 14px; font-size: 12px; font-weight: 600; color: #8b949e; text-transform: uppercase; letter-spacing: .3px; }
+.modal input, .modal select { width: 100%; padding: 10px 12px; margin-top: 4px; border: 1px solid #233040; border-radius: 8px; background: #0a0e14; color: #d1d5db; font-family: inherit; font-size: 14px; }
+.modal input:focus, .modal select:focus { outline: none; border-color: #3b82f6; }
+.modal .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.modal .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0 10px; }
+.modal-buttons { margin-top: 24px; display: flex; gap: 10px; justify-content: end; }
+.modal-buttons button { padding: 10px 22px; border-radius: 8px; border: none; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; }
+#toast { visibility: hidden; min-width: 260px; background: #1a2330; color: #f0f4f8; text-align: center; border-radius: 10px; padding: 14px 24px; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 100; border: 1px solid #233040; font-size: 14px; font-weight: 500; }
+#toast.show { visibility: visible; animation: toastIn .3s, toastOut .3s 2.7s; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
 </style>
 </head>
 <body>
 <div class="container">
+
 <div class="header">
-    <h1><span>VoIP</span> Inventário</h1>
-    <span class="badge">135 registros</span>
+    <div class="header-left">
+        <h1><span>VoIP</span> Inventário</h1>
+        <span class="badge" id="totalBadge">0 registros</span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="configToken()">&#128273; Token</button>
+        <button class="btn btn-primary" onclick="abrirAdicionar()">+ Novo</button>
+        <button class="btn btn-green" id="btnSalvar" onclick="salvar()">&#128190; Salvar</button>
+    </div>
 </div>
-<div class="grid">
-    <div class="stat-card"><div class="num blue">135</div><div class="label">Total</div></div>
-    <div class="stat-card"><div class="num green">135</div><div class="label">Online</div></div>
-    <div class="stat-card"><div class="num red">0</div><div class="label">Offline</div></div>
-    <div class="stat-card"><div class="num blue">131</div><div class="label">Setores</div></div>
-    <div class="stat-card"><div class="num blue">2</div><div class="label">Modelos</div></div>
-</div>
+
+<div class="grid" id="statsGrid"></div>
+
 <div class="table-wrap">
 <div class="toolbar" style="padding:12px 16px 0 16px;">
-    <input type="text" id="search" placeholder="Buscar IP, setor, telefone, MAC..." oninput="filter()">
-    <select id="statusFilter" onchange="filter()">
+    <input type="text" id="search" placeholder="Buscar IP, setor, telefone, MAC..." oninput="filtrar()">
+    <select id="statusFilter" onchange="filtrar()">
         <option value="">Status</option>
         <option value="ONLINE">Online</option>
         <option value="OFFLINE">Offline</option>
     </select>
-    <select id="modeloFilter" onchange="filter()">
+    <select id="modeloFilter" onchange="filtrar()">
         <option value="">Modelo</option>
                 <option value="P10G">P10G</option>
         <option value="P11G">P11G</option>
@@ -121,13 +104,14 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
 <div class="table-scroll">
 <table>
 <thead><tr>
-    <th onclick="sort(0)">IP</th>
-    <th onclick="sort(1)">Setor</th>
-    <th onclick="sort(2)">Telefone</th>
-    <th onclick="sort(3)">Status</th>
-    <th onclick="sort(4)">Modelo</th>
+    <th onclick="ordenar(0)">IP</th>
+    <th onclick="ordenar(1)">Setor</th>
+    <th onclick="ordenar(2)">Telefone</th>
+    <th onclick="ordenar(3)">Status</th>
+    <th onclick="ordenar(4)">Modelo</th>
     <th>MAC</th>
     <th>Serial</th>
+    <th>Ações</th>
 </tr></thead>
 <tbody id="tbody">
     <tr>
@@ -138,6 +122,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:F7</td>
         <td class="mono">FLY15225800419</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.67')">Editar</button><button class="del-btn" onclick="remover('10.75.16.67')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.57" target="_blank">10.75.16.57</a></td>
@@ -147,6 +132,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:A9</td>
         <td class="mono">FLY15225800636</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.57')">Editar</button><button class="del-btn" onclick="remover('10.75.16.57')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.153" target="_blank">10.75.16.153</a></td>
@@ -156,6 +142,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:35</td>
         <td class="mono">FLY15225800578</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.153')">Editar</button><button class="del-btn" onclick="remover('10.75.16.153')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.119" target="_blank">10.75.16.119</a></td>
@@ -165,6 +152,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:7B</td>
         <td class="mono">FLY15225800613</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.119')">Editar</button><button class="del-btn" onclick="remover('10.75.16.119')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.114" target="_blank">10.75.16.114</a></td>
@@ -174,6 +162,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P10G</td>
         <td class="mono">00:21:F2:47:D7:9B</td>
         <td class="mono">FLY14823700540</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.114')">Editar</button><button class="del-btn" onclick="remover('10.75.16.114')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.154" target="_blank">10.75.16.154</a></td>
@@ -183,6 +172,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:11</td>
         <td class="mono">FLY15225800432</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.154')">Editar</button><button class="del-btn" onclick="remover('10.75.16.154')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.146" target="_blank">10.75.16.146</a></td>
@@ -192,6 +182,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:61</td>
         <td class="mono">FLY15225800600</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.146')">Editar</button><button class="del-btn" onclick="remover('10.75.16.146')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.138" target="_blank">10.75.16.138</a></td>
@@ -201,6 +192,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:3B</td>
         <td class="mono">FLY15225800453</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.138')">Editar</button><button class="del-btn" onclick="remover('10.75.16.138')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.182" target="_blank">10.75.16.182</a></td>
@@ -210,6 +202,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:55</td>
         <td class="mono">FLY15225800466</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.182')">Editar</button><button class="del-btn" onclick="remover('10.75.16.182')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.196" target="_blank">10.75.16.196</a></td>
@@ -219,6 +212,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:4F</td>
         <td class="mono">FLY15225800463</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.196')">Editar</button><button class="del-btn" onclick="remover('10.75.16.196')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.212" target="_blank">10.75.16.212</a></td>
@@ -228,6 +222,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:D5</td>
         <td class="mono">FLY15225800402</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.212')">Editar</button><button class="del-btn" onclick="remover('10.75.16.212')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.205" target="_blank">10.75.16.205</a></td>
@@ -237,6 +232,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:F1</td>
         <td class="mono">FLY15225800416</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.205')">Editar</button><button class="del-btn" onclick="remover('10.75.16.205')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.203" target="_blank">10.75.16.203</a></td>
@@ -246,6 +242,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:51</td>
         <td class="mono">FLY15225800464</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.203')">Editar</button><button class="del-btn" onclick="remover('10.75.16.203')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.184" target="_blank">10.75.16.184</a></td>
@@ -255,6 +252,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6B:FD</td>
         <td class="mono">FLY15225800934</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.184')">Editar</button><button class="del-btn" onclick="remover('10.75.16.184')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.218" target="_blank">10.75.16.218</a></td>
@@ -264,6 +262,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6A:11</td>
         <td class="mono">FLY15225800688</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.218')">Editar</button><button class="del-btn" onclick="remover('10.75.16.218')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.16.186" target="_blank">10.75.16.186</a></td>
@@ -273,6 +272,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6A:51</td>
         <td class="mono">FLY15225800720</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.16.186')">Editar</button><button class="del-btn" onclick="remover('10.75.16.186')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.17.3" target="_blank">10.75.17.3</a></td>
@@ -282,6 +282,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:AD</td>
         <td class="mono">FLY15225800510</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.17.3')">Editar</button><button class="del-btn" onclick="remover('10.75.17.3')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.17.99" target="_blank">10.75.17.99</a></td>
@@ -291,6 +292,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:01</td>
         <td class="mono">FLY15225800424</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.17.99')">Editar</button><button class="del-btn" onclick="remover('10.75.17.99')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.17.116" target="_blank">10.75.17.116</a></td>
@@ -300,6 +302,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:2B</td>
         <td class="mono">FLY15225800573</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.17.116')">Editar</button><button class="del-btn" onclick="remover('10.75.17.116')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.17.120" target="_blank">10.75.17.120</a></td>
@@ -309,6 +312,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:BD</td>
         <td class="mono">FLY15225800518</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.17.120')">Editar</button><button class="del-btn" onclick="remover('10.75.17.120')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.17.90" target="_blank">10.75.17.90</a></td>
@@ -318,6 +322,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:77</td>
         <td class="mono">FLY15225800483</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.17.90')">Editar</button><button class="del-btn" onclick="remover('10.75.17.90')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.17.178" target="_blank">10.75.17.178</a></td>
@@ -327,6 +332,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:DB</td>
         <td class="mono">FLY15225800405</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.17.178')">Editar</button><button class="del-btn" onclick="remover('10.75.17.178')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.18.62" target="_blank">10.75.18.62</a></td>
@@ -336,6 +342,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:87</td>
         <td class="mono">FLY15225800619</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.18.62')">Editar</button><button class="del-btn" onclick="remover('10.75.18.62')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.18.72" target="_blank">10.75.18.72</a></td>
@@ -345,6 +352,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:51</td>
         <td class="mono">FLY15225800592</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.18.72')">Editar</button><button class="del-btn" onclick="remover('10.75.18.72')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.18.103" target="_blank">10.75.18.103</a></td>
@@ -354,6 +362,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6A:0B</td>
         <td class="mono">FLY15225800685</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.18.103')">Editar</button><button class="del-btn" onclick="remover('10.75.18.103')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.18.170" target="_blank">10.75.18.170</a></td>
@@ -363,6 +372,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:39</td>
         <td class="mono">FLY15225800452</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.18.170')">Editar</button><button class="del-btn" onclick="remover('10.75.18.170')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.18.234" target="_blank">10.75.18.234</a></td>
@@ -372,6 +382,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:3D</td>
         <td class="mono">FLY15225800454</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.18.234')">Editar</button><button class="del-btn" onclick="remover('10.75.18.234')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.19.90" target="_blank">10.75.19.90</a></td>
@@ -381,6 +392,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:C3</td>
         <td class="mono">FLY15225800521</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.19.90')">Editar</button><button class="del-btn" onclick="remover('10.75.19.90')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.19.201" target="_blank">10.75.19.201</a></td>
@@ -390,6 +402,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:4F</td>
         <td class="mono">FLY15225800591</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.19.201')">Editar</button><button class="del-btn" onclick="remover('10.75.19.201')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.20.69" target="_blank">10.75.20.69</a></td>
@@ -399,6 +412,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:B3</td>
         <td class="mono">FLY15225800513</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.20.69')">Editar</button><button class="del-btn" onclick="remover('10.75.20.69')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.20.72" target="_blank">10.75.20.72</a></td>
@@ -408,6 +422,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:49</td>
         <td class="mono">FLY15225800460</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.20.72')">Editar</button><button class="del-btn" onclick="remover('10.75.20.72')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.20.71" target="_blank">10.75.20.71</a></td>
@@ -417,6 +432,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:0B</td>
         <td class="mono">FLY15225800557</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.20.71')">Editar</button><button class="del-btn" onclick="remover('10.75.20.71')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.20.136" target="_blank">10.75.20.136</a></td>
@@ -426,6 +442,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:54:BA:93</td>
         <td class="mono">FLY15224C00404</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.20.136')">Editar</button><button class="del-btn" onclick="remover('10.75.20.136')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.20.202" target="_blank">10.75.20.202</a></td>
@@ -435,6 +452,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:59</td>
         <td class="mono">FLY15225800596</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.20.202')">Editar</button><button class="del-btn" onclick="remover('10.75.20.202')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.20.212" target="_blank">10.75.20.212</a></td>
@@ -444,6 +462,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:47</td>
         <td class="mono">FLY15225800459</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.20.212')">Editar</button><button class="del-btn" onclick="remover('10.75.20.212')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.20.224" target="_blank">10.75.20.224</a></td>
@@ -453,6 +472,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:81</td>
         <td class="mono">FLY15225800616</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.20.224')">Editar</button><button class="del-btn" onclick="remover('10.75.20.224')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.20.244" target="_blank">10.75.20.244</a></td>
@@ -462,6 +482,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:57</td>
         <td class="mono">FLY15225800595</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.20.244')">Editar</button><button class="del-btn" onclick="remover('10.75.20.244')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.63" target="_blank">10.75.21.63</a></td>
@@ -471,6 +492,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6A:0F</td>
         <td class="mono">FLY15225800687</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.63')">Editar</button><button class="del-btn" onclick="remover('10.75.21.63')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.88" target="_blank">10.75.21.88</a></td>
@@ -480,6 +502,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:93</td>
         <td class="mono">FLY15225800497</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.88')">Editar</button><button class="del-btn" onclick="remover('10.75.21.88')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.114" target="_blank">10.75.21.114</a></td>
@@ -489,6 +512,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:79</td>
         <td class="mono">FLY15225800612</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.114')">Editar</button><button class="del-btn" onclick="remover('10.75.21.114')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.111" target="_blank">10.75.21.111</a></td>
@@ -498,6 +522,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:0D</td>
         <td class="mono">FLY15225800942</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.111')">Editar</button><button class="del-btn" onclick="remover('10.75.21.111')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.124" target="_blank">10.75.21.124</a></td>
@@ -507,6 +532,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:AF</td>
         <td class="mono">FLY15225800511</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.124')">Editar</button><button class="del-btn" onclick="remover('10.75.21.124')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.150" target="_blank">10.75.21.150</a></td>
@@ -516,6 +542,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:0D</td>
         <td class="mono">FLY15225800430</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.150')">Editar</button><button class="del-btn" onclick="remover('10.75.21.150')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.179" target="_blank">10.75.21.179</a></td>
@@ -525,6 +552,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:85</td>
         <td class="mono">FLY15225800490</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.179')">Editar</button><button class="del-btn" onclick="remover('10.75.21.179')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.178" target="_blank">10.75.21.178</a></td>
@@ -534,6 +562,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:CB</td>
         <td class="mono">FLY15225800525</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.178')">Editar</button><button class="del-btn" onclick="remover('10.75.21.178')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.180" target="_blank">10.75.21.180</a></td>
@@ -543,6 +572,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:73</td>
         <td class="mono">FLY15225800481</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.180')">Editar</button><button class="del-btn" onclick="remover('10.75.21.180')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.186" target="_blank">10.75.21.186</a></td>
@@ -552,6 +582,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:C7</td>
         <td class="mono">FLY15225800523</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.186')">Editar</button><button class="del-btn" onclick="remover('10.75.21.186')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.220" target="_blank">10.75.21.220</a></td>
@@ -561,6 +592,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:5D</td>
         <td class="mono">FLY15225800598</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.220')">Editar</button><button class="del-btn" onclick="remover('10.75.21.220')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.222" target="_blank">10.75.21.222</a></td>
@@ -570,6 +602,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:91</td>
         <td class="mono">FLY15225800496</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.222')">Editar</button><button class="del-btn" onclick="remover('10.75.21.222')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.197" target="_blank">10.75.21.197</a></td>
@@ -579,6 +612,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:7D</td>
         <td class="mono">FLY15225800486</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.197')">Editar</button><button class="del-btn" onclick="remover('10.75.21.197')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.196" target="_blank">10.75.21.196</a></td>
@@ -588,6 +622,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:C5</td>
         <td class="mono">FLY15225800522</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.196')">Editar</button><button class="del-btn" onclick="remover('10.75.21.196')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.205" target="_blank">10.75.21.205</a></td>
@@ -597,6 +632,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:19</td>
         <td class="mono">FLY15225800436</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.205')">Editar</button><button class="del-btn" onclick="remover('10.75.21.205')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.255" target="_blank">10.75.21.255</a></td>
@@ -606,6 +642,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:99</td>
         <td class="mono">FLY15225800500</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.255')">Editar</button><button class="del-btn" onclick="remover('10.75.21.255')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.209" target="_blank">10.75.21.209</a></td>
@@ -615,6 +652,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:D5</td>
         <td class="mono">FLY15225800530</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.209')">Editar</button><button class="del-btn" onclick="remover('10.75.21.209')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.211" target="_blank">10.75.21.211</a></td>
@@ -624,6 +662,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:7F</td>
         <td class="mono">FLY15225800487</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.211')">Editar</button><button class="del-btn" onclick="remover('10.75.21.211')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.210" target="_blank">10.75.21.210</a></td>
@@ -633,6 +672,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:83</td>
         <td class="mono">FLY15225800489</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.210')">Editar</button><button class="del-btn" onclick="remover('10.75.21.210')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.223" target="_blank">10.75.21.223</a></td>
@@ -642,6 +682,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:1D</td>
         <td class="mono">FLY15225800438</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.223')">Editar</button><button class="del-btn" onclick="remover('10.75.21.223')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.225" target="_blank">10.75.21.225</a></td>
@@ -651,6 +692,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:17</td>
         <td class="mono">FLY15225800435</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.225')">Editar</button><button class="del-btn" onclick="remover('10.75.21.225')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.236" target="_blank">10.75.21.236</a></td>
@@ -660,6 +702,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:85</td>
         <td class="mono">FLY15225800618</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.236')">Editar</button><button class="del-btn" onclick="remover('10.75.21.236')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.247" target="_blank">10.75.21.247</a></td>
@@ -669,6 +712,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:D1</td>
         <td class="mono">FLY15225800528</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.247')">Editar</button><button class="del-btn" onclick="remover('10.75.21.247')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.246" target="_blank">10.75.21.246</a></td>
@@ -678,6 +722,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:D3</td>
         <td class="mono">FLY15225800529</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.246')">Editar</button><button class="del-btn" onclick="remover('10.75.21.246')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.248" target="_blank">10.75.21.248</a></td>
@@ -687,6 +732,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:79</td>
         <td class="mono">FLY15225800484</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.248')">Editar</button><button class="del-btn" onclick="remover('10.75.21.248')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.251" target="_blank">10.75.21.251</a></td>
@@ -696,6 +742,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:75</td>
         <td class="mono">FLY15225800482</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.251')">Editar</button><button class="del-btn" onclick="remover('10.75.21.251')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.249" target="_blank">10.75.21.249</a></td>
@@ -705,6 +752,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:1B</td>
         <td class="mono">FLY15225800437</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.249')">Editar</button><button class="del-btn" onclick="remover('10.75.21.249')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.252" target="_blank">10.75.21.252</a></td>
@@ -714,6 +762,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:0F</td>
         <td class="mono">FLY15225800431</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.252')">Editar</button><button class="del-btn" onclick="remover('10.75.21.252')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.21.253" target="_blank">10.75.21.253</a></td>
@@ -723,6 +772,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:1F</td>
         <td class="mono">FLY15225800439</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.21.253')">Editar</button><button class="del-btn" onclick="remover('10.75.21.253')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.0" target="_blank">10.75.22.0</a></td>
@@ -732,6 +782,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:15</td>
         <td class="mono">FLY15225800434</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.0')">Editar</button><button class="del-btn" onclick="remover('10.75.22.0')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.2" target="_blank">10.75.22.2</a></td>
@@ -741,6 +792,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:7B</td>
         <td class="mono">FLY15225800485</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.2')">Editar</button><button class="del-btn" onclick="remover('10.75.22.2')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.4" target="_blank">10.75.22.4</a></td>
@@ -750,6 +802,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:CF</td>
         <td class="mono">FLY15225800527</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.4')">Editar</button><button class="del-btn" onclick="remover('10.75.22.4')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.44" target="_blank">10.75.22.44</a></td>
@@ -759,6 +812,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:A3</td>
         <td class="mono">FLY15225800633</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.44')">Editar</button><button class="del-btn" onclick="remover('10.75.22.44')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.43" target="_blank">10.75.22.43</a></td>
@@ -768,6 +822,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:0F</td>
         <td class="mono">FLY15225800559</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.43')">Editar</button><button class="del-btn" onclick="remover('10.75.22.43')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.6" target="_blank">10.75.22.6</a></td>
@@ -777,6 +832,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:89</td>
         <td class="mono">FLY15225800492</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.6')">Editar</button><button class="del-btn" onclick="remover('10.75.22.6')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.7" target="_blank">10.75.22.7</a></td>
@@ -786,6 +842,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:CD</td>
         <td class="mono">FLY15225800526</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.7')">Editar</button><button class="del-btn" onclick="remover('10.75.22.7')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.12" target="_blank">10.75.22.12</a></td>
@@ -795,6 +852,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:81</td>
         <td class="mono">FLY15225800488</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.12')">Editar</button><button class="del-btn" onclick="remover('10.75.22.12')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.49" target="_blank">10.75.22.49</a></td>
@@ -804,6 +862,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:0F</td>
         <td class="mono">FLY15225800943</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.49')">Editar</button><button class="del-btn" onclick="remover('10.75.22.49')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.14" target="_blank">10.75.22.14</a></td>
@@ -813,6 +872,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:13</td>
         <td class="mono">FLY15225800433</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.14')">Editar</button><button class="del-btn" onclick="remover('10.75.22.14')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.13" target="_blank">10.75.22.13</a></td>
@@ -822,6 +882,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:95</td>
         <td class="mono">FLY15225800498</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.13')">Editar</button><button class="del-btn" onclick="remover('10.75.22.13')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.16" target="_blank">10.75.22.16</a></td>
@@ -831,6 +892,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6B:FF</td>
         <td class="mono">FLY15225800935</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.16')">Editar</button><button class="del-btn" onclick="remover('10.75.22.16')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.15" target="_blank">10.75.22.15</a></td>
@@ -840,6 +902,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:8B</td>
         <td class="mono">FLY15225800493</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.15')">Editar</button><button class="del-btn" onclick="remover('10.75.22.15')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.17" target="_blank">10.75.22.17</a></td>
@@ -849,6 +912,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:AB</td>
         <td class="mono">FLY15225800509</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.17')">Editar</button><button class="del-btn" onclick="remover('10.75.22.17')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.20" target="_blank">10.75.22.20</a></td>
@@ -858,6 +922,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:9B</td>
         <td class="mono">FLY15225800501</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.20')">Editar</button><button class="del-btn" onclick="remover('10.75.22.20')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.19" target="_blank">10.75.22.19</a></td>
@@ -867,6 +932,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:37</td>
         <td class="mono">FLY15225800451</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.19')">Editar</button><button class="del-btn" onclick="remover('10.75.22.19')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.18" target="_blank">10.75.22.18</a></td>
@@ -876,6 +942,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:09</td>
         <td class="mono">FLY15225800940</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.18')">Editar</button><button class="del-btn" onclick="remover('10.75.22.18')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.30" target="_blank">10.75.22.30</a></td>
@@ -885,6 +952,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:A7</td>
         <td class="mono">FLY15225800507</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.30')">Editar</button><button class="del-btn" onclick="remover('10.75.22.30')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.21" target="_blank">10.75.22.21</a></td>
@@ -894,6 +962,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:3F</td>
         <td class="mono">FLY15225800455</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.21')">Editar</button><button class="del-btn" onclick="remover('10.75.22.21')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.22" target="_blank">10.75.22.22</a></td>
@@ -903,6 +972,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:27</td>
         <td class="mono">FLY15225800571</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.22')">Editar</button><button class="del-btn" onclick="remover('10.75.22.22')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.23" target="_blank">10.75.22.23</a></td>
@@ -912,6 +982,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:9D</td>
         <td class="mono">FLY15225800502</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.23')">Editar</button><button class="del-btn" onclick="remover('10.75.22.23')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.24" target="_blank">10.75.22.24</a></td>
@@ -921,6 +992,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:AD</td>
         <td class="mono">FLY15225800638</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.24')">Editar</button><button class="del-btn" onclick="remover('10.75.22.24')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.26" target="_blank">10.75.22.26</a></td>
@@ -930,6 +1002,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:29</td>
         <td class="mono">FLY15225800572</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.26')">Editar</button><button class="del-btn" onclick="remover('10.75.22.26')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.28" target="_blank">10.75.22.28</a></td>
@@ -939,6 +1012,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:83</td>
         <td class="mono">FLY15225800617</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.28')">Editar</button><button class="del-btn" onclick="remover('10.75.22.28')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.25" target="_blank">10.75.22.25</a></td>
@@ -948,6 +1022,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:B1</td>
         <td class="mono">FLY15225800640</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.25')">Editar</button><button class="del-btn" onclick="remover('10.75.22.25')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.27" target="_blank">10.75.22.27</a></td>
@@ -957,6 +1032,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:89</td>
         <td class="mono">FLY15225800620</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.27')">Editar</button><button class="del-btn" onclick="remover('10.75.22.27')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.34" target="_blank">10.75.22.34</a></td>
@@ -966,6 +1042,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:7D</td>
         <td class="mono">FLY15225800614</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.34')">Editar</button><button class="del-btn" onclick="remover('10.75.22.34')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.32" target="_blank">10.75.22.32</a></td>
@@ -975,6 +1052,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:77</td>
         <td class="mono">FLY15225800611</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.32')">Editar</button><button class="del-btn" onclick="remover('10.75.22.32')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.35" target="_blank">10.75.22.35</a></td>
@@ -984,6 +1062,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:2F</td>
         <td class="mono">FLY15225800575</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.35')">Editar</button><button class="del-btn" onclick="remover('10.75.22.35')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.39" target="_blank">10.75.22.39</a></td>
@@ -993,6 +1072,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6A:07</td>
         <td class="mono">FLY15225800683</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.39')">Editar</button><button class="del-btn" onclick="remover('10.75.22.39')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.38" target="_blank">10.75.22.38</a></td>
@@ -1002,6 +1082,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:05</td>
         <td class="mono">FLY15225800938</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.38')">Editar</button><button class="del-btn" onclick="remover('10.75.22.38')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.40" target="_blank">10.75.22.40</a></td>
@@ -1011,6 +1092,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6A:03</td>
         <td class="mono">FLY15225800681</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.40')">Editar</button><button class="del-btn" onclick="remover('10.75.22.40')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.41" target="_blank">10.75.22.41</a></td>
@@ -1020,6 +1102,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:ED</td>
         <td class="mono">FLY15225800414</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.41')">Editar</button><button class="del-btn" onclick="remover('10.75.22.41')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.47" target="_blank">10.75.22.47</a></td>
@@ -1029,6 +1112,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6A:15</td>
         <td class="mono">FLY15225800690</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.47')">Editar</button><button class="del-btn" onclick="remover('10.75.22.47')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.50" target="_blank">10.75.22.50</a></td>
@@ -1038,6 +1122,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:05</td>
         <td class="mono">FLY15225800426</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.50')">Editar</button><button class="del-btn" onclick="remover('10.75.22.50')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.52" target="_blank">10.75.22.52</a></td>
@@ -1047,6 +1132,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:09</td>
         <td class="mono">FLY15225800556</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.52')">Editar</button><button class="del-btn" onclick="remover('10.75.22.52')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.53" target="_blank">10.75.22.53</a></td>
@@ -1056,6 +1142,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6A:05</td>
         <td class="mono">FLY15225800682</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.53')">Editar</button><button class="del-btn" onclick="remover('10.75.22.53')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.54" target="_blank">10.75.22.54</a></td>
@@ -1065,6 +1152,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:31</td>
         <td class="mono">FLY15225800576</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.54')">Editar</button><button class="del-btn" onclick="remover('10.75.22.54')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.55" target="_blank">10.75.22.55</a></td>
@@ -1074,6 +1162,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:13</td>
         <td class="mono">FLY15225800945</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.55')">Editar</button><button class="del-btn" onclick="remover('10.75.22.55')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.57" target="_blank">10.75.22.57</a></td>
@@ -1083,6 +1172,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:11</td>
         <td class="mono">FLY15225800944</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.57')">Editar</button><button class="del-btn" onclick="remover('10.75.22.57')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.58" target="_blank">10.75.22.58</a></td>
@@ -1092,6 +1182,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:2D</td>
         <td class="mono">FLY15225800574</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.58')">Editar</button><button class="del-btn" onclick="remover('10.75.22.58')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.59" target="_blank">10.75.22.59</a></td>
@@ -1101,6 +1192,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:07</td>
         <td class="mono">FLY15225800939</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.59')">Editar</button><button class="del-btn" onclick="remover('10.75.22.59')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.60" target="_blank">10.75.22.60</a></td>
@@ -1110,6 +1202,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:15</td>
         <td class="mono">FLY15225800946</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.60')">Editar</button><button class="del-btn" onclick="remover('10.75.22.60')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.61" target="_blank">10.75.22.61</a></td>
@@ -1119,6 +1212,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:5D</td>
         <td class="mono">FLY15225800470</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.61')">Editar</button><button class="del-btn" onclick="remover('10.75.22.61')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.64" target="_blank">10.75.22.64</a></td>
@@ -1128,6 +1222,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:19</td>
         <td class="mono">FLY15225800948</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.64')">Editar</button><button class="del-btn" onclick="remover('10.75.22.64')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.62" target="_blank">10.75.22.62</a></td>
@@ -1137,6 +1232,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:D3</td>
         <td class="mono">FLY15225800401</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.62')">Editar</button><button class="del-btn" onclick="remover('10.75.22.62')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.66" target="_blank">10.75.22.66</a></td>
@@ -1146,6 +1242,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:0D</td>
         <td class="mono">FLY15225800558</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.66')">Editar</button><button class="del-btn" onclick="remover('10.75.22.66')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.68" target="_blank">10.75.22.68</a></td>
@@ -1155,6 +1252,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:1D</td>
         <td class="mono">FLY15225800950</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.68')">Editar</button><button class="del-btn" onclick="remover('10.75.22.68')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.70" target="_blank">10.75.22.70</a></td>
@@ -1164,6 +1262,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:E7</td>
         <td class="mono">FLY15225800411</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.70')">Editar</button><button class="del-btn" onclick="remover('10.75.22.70')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.69" target="_blank">10.75.22.69</a></td>
@@ -1173,6 +1272,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:E5</td>
         <td class="mono">FLY15225800410</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.69')">Editar</button><button class="del-btn" onclick="remover('10.75.22.69')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.71" target="_blank">10.75.22.71</a></td>
@@ -1182,6 +1282,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:E3</td>
         <td class="mono">FLY15225800409</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.71')">Editar</button><button class="del-btn" onclick="remover('10.75.22.71')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.78" target="_blank">10.75.22.78</a></td>
@@ -1191,6 +1292,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:F3</td>
         <td class="mono">FLY15225800417</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.78')">Editar</button><button class="del-btn" onclick="remover('10.75.22.78')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.72" target="_blank">10.75.22.72</a></td>
@@ -1200,6 +1302,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:39</td>
         <td class="mono">FLY15225800580</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.72')">Editar</button><button class="del-btn" onclick="remover('10.75.22.72')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.75" target="_blank">10.75.22.75</a></td>
@@ -1209,6 +1312,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:5B</td>
         <td class="mono">FLY15225800469</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.75')">Editar</button><button class="del-btn" onclick="remover('10.75.22.75')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.76" target="_blank">10.75.22.76</a></td>
@@ -1218,6 +1322,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:4D</td>
         <td class="mono">FLY15225800462</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.76')">Editar</button><button class="del-btn" onclick="remover('10.75.22.76')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.79" target="_blank">10.75.22.79</a></td>
@@ -1227,6 +1332,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:F5</td>
         <td class="mono">FLY15225800418</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.79')">Editar</button><button class="del-btn" onclick="remover('10.75.22.79')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.80" target="_blank">10.75.22.80</a></td>
@@ -1236,6 +1342,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:67:EB</td>
         <td class="mono">FLY15225800413</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.80')">Editar</button><button class="del-btn" onclick="remover('10.75.22.80')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.82" target="_blank">10.75.22.82</a></td>
@@ -1245,6 +1352,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:57</td>
         <td class="mono">FLY15225800467</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.82')">Editar</button><button class="del-btn" onclick="remover('10.75.22.82')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.81" target="_blank">10.75.22.81</a></td>
@@ -1254,6 +1362,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:9F</td>
         <td class="mono">FLY15225800503</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.81')">Editar</button><button class="del-btn" onclick="remover('10.75.22.81')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.88" target="_blank">10.75.22.88</a></td>
@@ -1263,6 +1372,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:A1</td>
         <td class="mono">FLY15225800504</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.88')">Editar</button><button class="del-btn" onclick="remover('10.75.22.88')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.87" target="_blank">10.75.22.87</a></td>
@@ -1272,6 +1382,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:7F</td>
         <td class="mono">FLY15225800615</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.87')">Editar</button><button class="del-btn" onclick="remover('10.75.22.87')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.89" target="_blank">10.75.22.89</a></td>
@@ -1281,6 +1392,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:A5</td>
         <td class="mono">FLY15225800506</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.89')">Editar</button><button class="del-btn" onclick="remover('10.75.22.89')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.90" target="_blank">10.75.22.90</a></td>
@@ -1290,6 +1402,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:BB</td>
         <td class="mono">FLY15225800517</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.90')">Editar</button><button class="del-btn" onclick="remover('10.75.22.90')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.92" target="_blank">10.75.22.92</a></td>
@@ -1299,6 +1412,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:55</td>
         <td class="mono">FLY15225800594</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.92')">Editar</button><button class="del-btn" onclick="remover('10.75.22.92')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.102" target="_blank">10.75.22.102</a></td>
@@ -1308,6 +1422,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:68:43</td>
         <td class="mono">FLY15225800457</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.102')">Editar</button><button class="del-btn" onclick="remover('10.75.22.102')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.103" target="_blank">10.75.22.103</a></td>
@@ -1317,6 +1432,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:6C:03</td>
         <td class="mono">FLY15225800937</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.103')">Editar</button><button class="del-btn" onclick="remover('10.75.22.103')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.99" target="_blank">10.75.22.99</a></td>
@@ -1326,6 +1442,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:03</td>
         <td class="mono">FLY15225800553</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.99')">Editar</button><button class="del-btn" onclick="remover('10.75.22.99')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.107" target="_blank">10.75.22.107</a></td>
@@ -1335,6 +1452,7 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:A7</td>
         <td class="mono">FLY15225800635</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.107')">Editar</button><button class="del-btn" onclick="remover('10.75.22.107')">Remover</button></div></td>
     </tr>
     <tr>
         <td><a href="http://10.75.22.109" target="_blank">10.75.22.109</a></td>
@@ -1344,43 +1462,337 @@ td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; lette
         <td>P11G</td>
         <td class="mono">00:21:F2:5A:69:01</td>
         <td class="mono">FLY15225800552</td>
+        <td><div class="actions"><button class="edit-btn" onclick="editar('10.75.22.109')">Editar</button><button class="del-btn" onclick="remover('10.75.22.109')">Remover</button></div></td>
     </tr>
 </tbody>
 </table>
 </div>
 </div>
-<div class="footer">Atualizado em 23/06/2026 16:52</div>
+<div class="footer" style="text-align:center;margin-top:20px;color:#8b949e;font-size:12px;">Atualizado em 23/06/2026 17:02</div>
 </div>
+
+<div id="modalToken" class="modal">
+<div class="modal-content">
+    <h2>&#128273; Token do GitHub</h2>
+    <p class="sub">Para salvar alterações, crie um token em <strong>github.com/settings/tokens</strong> (escopo: <strong>repo</strong>) e cole abaixo.</p>
+    <label>Token</label><input type="password" id="inputToken" placeholder="ghp_...">
+    <label>Repositório</label><input id="inputRepo" placeholder="usuario/repositorio" value="Neguim6/Telefone-Voip-IPS">
+    <div class="modal-buttons">
+        <button class="btn btn-outline" onclick="fecharModal('modalToken')">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarToken()">Salvar</button>
+    </div>
+</div>
+</div>
+
+<div id="modalAdd" class="modal">
+<div class="modal-content">
+    <h2>Novo Telefone</h2>
+    <p class="sub">Preencha os campos para adicionar</p>
+    <label>IP *</label><input id="addIp" placeholder="10.75.16.xxx">
+    <label>Setor *</label><input id="addSetor" placeholder="Ex: TI">
+    <label>Telefone *</label><input id="addTel" placeholder="3027-xxxx">
+    <div class="row3">
+        <div><label>Modelo</label><input id="addModelo" placeholder="P11G"></div>
+        <div><label>MAC</label><input id="addMac" placeholder="00:21:F2:..."></div>
+        <div><label>Serial</label><input id="addSerial"></div>
+    </div>
+    <div class="row2">
+        <div><label>Hardware</label><input id="addHardware"></div>
+        <div><label>Firmware</label><input id="addFirmware"></div>
+    </div>
+    <label>Senha *</label><input type="password" id="addSenha" placeholder="Digite a senha">
+    <div class="modal-buttons">
+        <button class="btn btn-outline" onclick="fecharModal('modalAdd')">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmarAdicao()">Salvar</button>
+    </div>
+</div>
+</div>
+
+<div id="modalEdit" class="modal">
+<div class="modal-content">
+    <h2>Editar Telefone</h2>
+    <p class="sub" id="editIpDisplay"></p>
+    <div class="row2">
+        <div><label>Setor</label><input id="editSetor"></div>
+        <div><label>Telefone</label><input id="editTel"></div>
+    </div>
+    <div class="row2">
+        <div><label>Status</label><select id="editStatus"><option>ONLINE</option><option>OFFLINE</option></select></div>
+        <div><label>Modelo</label><input id="editModelo"></div>
+    </div>
+    <div class="row2">
+        <div><label>MAC</label><input id="editMac"></div>
+        <div><label>Serial</label><input id="editSerial"></div>
+    </div>
+    <label>Firmware</label><input id="editFirmware">
+    <label>Senha *</label><input type="password" id="editSenha" placeholder="Digite a senha">
+    <div class="modal-buttons">
+        <button class="btn btn-outline" onclick="fecharModal('modalEdit')">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmarEdicao()">Salvar</button>
+    </div>
+</div>
+</div>
+
+<div id="modalRemove" class="modal">
+<div class="modal-content">
+    <h2>Remover Telefone</h2>
+    <p class="sub">Tem certeza que deseja remover <strong id="removeIpDisplay" style="color:#f0f4f8"></strong>?</p>
+    <label>Senha *</label><input type="password" id="removeSenha" placeholder="Digite a senha">
+    <div class="modal-buttons">
+        <button class="btn btn-outline" onclick="fecharModal('modalRemove')">Cancelar</button>
+        <button class="btn btn-red" onclick="confirmarRemocao()">Remover</button>
+    </div>
+</div>
+</div>
+
+<div id="toast"></div>
+
 <script>
-const data = [{"IP": "10.75.16.67", "Setor": "FARM\u00c1CIA \u00c1 HEMODI\u00c1LISE/RETAGUARDA", "Telefone": "3027-4407", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:F7", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800419"}, {"IP": "10.75.16.57", "Setor": "ESCRITUR\u00c1RIOS \u2013 PS ADULTO", "Telefone": "3027-5197", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:A9", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800636"}, {"IP": "10.75.16.153", "Setor": "SSEPT 3\u00ba PISO", "Telefone": "3027-5643", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:35", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800578"}, {"IP": "10.75.16.119", "Setor": "PSICOLOGIA \u2013 PS ADULTO", "Telefone": "3027-4677", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:7B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800613"}, {"IP": "10.75.16.114", "Setor": "PSICOLOGIA \u2013 CONSULT\u00d3RIO NUAVE", "Telefone": "3027-4409", "Status": "ONLINE", "Nome do Produto": "P10G", "MAC": "00:21:F2:47:D7:9B", "Hardware": "V1.0.1.1.2.0.1", "Firmware": "FVUI V0.11.6(202411022003)", "Serial": "FLY14823700540"}, {"IP": "10.75.16.154", "Setor": "COORDENA\u00c7\u00c3O DE ENFERMAGEM", "Telefone": "3027-4713", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:11", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800432"}, {"IP": "10.75.16.146", "Setor": "NIR ENFERMAGEM", "Telefone": "3027-5278", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:61", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800600"}, {"IP": "10.75.16.138", "Setor": "CENTRO CIR\u00daRGICO", "Telefone": "3027-5317", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:3B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800453"}, {"IP": "10.75.16.182", "Setor": "HEMOCENTRO \u2013 CAPTA\u00c7\u00c3O", "Telefone": "3027-5222", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:55", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800466"}, {"IP": "10.75.16.196", "Setor": "HEMOCENTRO CAPTA\u00c7\u00c3O DE DOADORES", "Telefone": "3027-5241", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:4F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800463"}, {"IP": "10.75.16.212", "Setor": "HEMOCENTRO \u2013 SALA DE ENFERMAGEM", "Telefone": "3027-5288", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:D5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800402"}, {"IP": "10.75.16.205", "Setor": "HEMOCENTRO \u2013 AMBULATORIO (RESSARCIMENTO)", "Telefone": "3027-5225", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:F1", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800416"}, {"IP": "10.75.16.203", "Setor": "HEMOCENTRO \u2013 CONSULT\u00d3RIO", "Telefone": "3027-5242", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:51", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800464"}, {"IP": "10.75.16.184", "Setor": "LIBERA\u00c7\u00c3O DE OBITOS", "Telefone": "3027-5274", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6B:FD", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800934"}, {"IP": "10.75.16.218", "Setor": "MANUTEN\u00c7\u00c3O PREDIAL \u2013 COORDENA\u00c7\u00c3O/FISCAL", "Telefone": "3027-5280", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:11", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800688"}, {"IP": "10.75.16.186", "Setor": "VIGILANTES (EXCLUSIVO PARA ACIONAR O SERVI\u00c7O)", "Telefone": "3027-5474", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:51", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800720"}, {"IP": "10.75.17.3", "Setor": "CUIDADOS PALIATIVOS", "Telefone": "3027-5268", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:AD", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800510"}, {"IP": "10.75.17.99", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA L (ORTOPEDIA)", "Telefone": "3027-5212", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:01", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800424"}, {"IP": "10.75.17.116", "Setor": "FARM\u00c1CIA - CAF", "Telefone": "3027-5275", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:2B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800573"}, {"IP": "10.75.17.120", "Setor": "FARM\u00c1CIA - 1\u00ba PISO", "Telefone": "3027-5306", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:BD", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800518"}, {"IP": "10.75.17.90", "Setor": "SERVI\u00c7O SOCIAL - INTERNA\u00c7\u00c3O", "Telefone": "3027-5311", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:77", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800483"}, {"IP": "10.75.17.178", "Setor": "HUMANIZA\u00c7\u00c3O \u2013 SERVI\u00c7O VOLUT\u00c1RIO E CAPELANIA", "Telefone": "3027-5649", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:DB", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800405"}, {"IP": "10.75.18.62", "Setor": "RETAGUARDA", "Telefone": "3027-5326", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:87", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800619"}, {"IP": "10.75.18.72", "Setor": "NUCLEO SEGURAN\u00c7A DO PACIENTE E VIGIL\u00c2NCIA DE RISCO", "Telefone": "3027-5258", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:51", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800592"}, {"IP": "10.75.18.103", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA PSIQUI\u00c1TRICA (MASCULINA)", "Telefone": "3027-5313", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:0B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800685"}, {"IP": "10.75.18.170", "Setor": "CENTRO CIRURGICO - RPA", "Telefone": "3027-5316", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:39", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800452"}, {"IP": "10.75.18.234", "Setor": "CIR\u00daRGIA ELETIVA - ADULTO", "Telefone": "3027-5319", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:3D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800454"}, {"IP": "10.75.19.90", "Setor": "AMBULATORIO ESPECIALIDADES ADULTO - CENTRO DE INFUS\u00c3O", "Telefone": "3027-5204", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:C3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800521"}, {"IP": "10.75.19.201", "Setor": "NIR \u2013 SERVI\u00c7O SOCIAL", "Telefone": "3027-5250", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:4F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800591"}, {"IP": "10.75.20.69", "Setor": "TRANSPORTE", "Telefone": "3027-5260", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:B3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800513"}, {"IP": "10.75.20.72", "Setor": "COMISS\u00c3O DE \u00d3BITO", "Telefone": "3027-5284", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:49", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800460"}, {"IP": "10.75.20.71", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA N (NEFROLOGIA)", "Telefone": "3027-5271", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:0B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800557"}, {"IP": "10.75.20.136", "Setor": "AMBULAT\u00d3RIO ONCOLOGIA - UNACON", "Telefone": "3027-5290", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:54:BA:93", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.10.46(202408231702)", "Serial": "FLY15224C00404"}, {"IP": "10.75.20.202", "Setor": "NASST", "Telefone": "3027-4681", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:59", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800596"}, {"IP": "10.75.20.212", "Setor": "BIOPSIA (NECROT\u00c9RIO)", "Telefone": "3027-5282", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:47", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800459"}, {"IP": "10.75.20.224", "Setor": "RH", "Telefone": "3027-5292", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:81", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800616"}, {"IP": "10.75.20.244", "Setor": "FARM\u00c1CIA \u2013 ONCOLOGIA (UNACON)", "Telefone": "3027-5285", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:57", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800595"}, {"IP": "10.75.21.63", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA PSIQUI\u00c1TRICA (FEMININA)", "Telefone": "3027-5312", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:0F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800687"}, {"IP": "10.75.21.88", "Setor": "QUIMIOTERAPIA \u2013 UNACON", "Telefone": "3027-4736", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:93", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800497"}, {"IP": "10.75.21.114", "Setor": "UIR", "Telefone": "3027-5277", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:79", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800612"}, {"IP": "10.75.21.111", "Setor": "TOMOGRAFIA 2", "Telefone": "3027-4406", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:0D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800942"}, {"IP": "10.75.21.124", "Setor": "SERVI\u00c7O SOCIAL \u2013 UIR/UAVC/PO \u2013 ALTA COMPLEXIDADE", "Telefone": "3027-5244", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:AF", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800511"}, {"IP": "10.75.21.150", "Setor": "SERVI\u00c7O SOCIAL \u2013 3\u00ba PISO", "Telefone": "3027-4701", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:0D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800430"}, {"IP": "10.75.21.179", "Setor": "SALA VERDE 3 - PS", "Telefone": "3027-5257", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:85", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800490"}, {"IP": "10.75.21.178", "Setor": "ASSESSORIA DE IMPRENSA", "Telefone": "3027-4712", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:CB", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800525"}, {"IP": "10.75.21.180", "Setor": "SERVI\u00c7O SOCIAL - OBSERVA\u00c7\u00d5ES", "Telefone": "3027-5202", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:73", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800481"}, {"IP": "10.75.21.186", "Setor": "AMBULATORIO ESPECIALIDADES ADULTO - RECEP\u00c7\u00c3O", "Telefone": "3027-4738", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:C7", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800523"}, {"IP": "10.75.21.220", "Setor": "NEP", "Telefone": "3027-5318", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:5D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800598"}, {"IP": "10.75.21.222", "Setor": "NUTRI\u00c7\u00c3O CLINICA", "Telefone": "3027-5272", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:91", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800496"}, {"IP": "10.75.21.197", "Setor": "SALA VERDE 1 - PS", "Telefone": "3027-5321", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:7D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800486"}, {"IP": "10.75.21.196", "Setor": "AMBULATORIO ESPECIALIDADES ADULTO - COORD ENFERMAGEM", "Telefone": "3027-5206", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:C5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800522"}, {"IP": "10.75.21.205", "Setor": "INTERNA\u00c7\u00c3O - PRESCRI\u00c7\u00c3O M\u00c9DICA", "Telefone": "3027-5307", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:19", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800436"}, {"IP": "10.75.21.255", "Setor": "ORTOPEDIA \u2013 COORDENA\u00c7\u00c3O", "Telefone": "3027-5273", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:99", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800500"}, {"IP": "10.75.21.209", "Setor": "AMBULATORIO ESPECIALIDADES ADULTO - AGENDAMENTO", "Telefone": "3027-5240", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:D5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800530"}, {"IP": "10.75.21.211", "Setor": "SALA VERMELHA / AMARELA - PS", "Telefone": "3027-5267", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:7F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800487"}, {"IP": "10.75.21.210", "Setor": "SALA VERDE 2 - PS", "Telefone": "3027-5269", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:83", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800489"}, {"IP": "10.75.21.223", "Setor": "FARM\u00c1CIA - PS", "Telefone": "3027-5217", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:1D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800438"}, {"IP": "10.75.21.225", "Setor": "ACOLHIMENTO CLASSIFICA\u00c7\u00c3O DE RISCO", "Telefone": "3027-5219", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:17", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800435"}, {"IP": "10.75.21.236", "Setor": "SALA VERMELHA", "Telefone": "3027-5229", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:85", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800618"}, {"IP": "10.75.21.247", "Setor": "AGENCIA TRANSFUSIONAL", "Telefone": "3027-5315", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:D1", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800528"}, {"IP": "10.75.21.246", "Setor": "ALMOXARIFADO", "Telefone": "3027-5276", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:D3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800529"}, {"IP": "10.75.21.248", "Setor": "RX", "Telefone": "3027-5218", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:79", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800484"}, {"IP": "10.75.21.251", "Setor": "SERVI\u00c7O SOCIAL - PS (ALTA RESPONS\u00c1VEL)", "Telefone": "3027-5266", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:75", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800482"}, {"IP": "10.75.21.249", "Setor": "INTERNA\u00c7\u00c3O - POSTO DE ENFERMAGEM", "Telefone": "3027-5308", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:1B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800437"}, {"IP": "10.75.21.252", "Setor": "ELETROENCEFALOGRAMA", "Telefone": "3027-4739", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:0F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800431"}, {"IP": "10.75.21.253", "Setor": "RECEP\u00c7\u00c3O PS", "Telefone": "3027-5200", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:1F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800439"}, {"IP": "10.75.22.0", "Setor": "AMBULAT\u00d3RIO DE PEDIATRIA", "Telefone": "3027-5256", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:15", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800434"}, {"IP": "10.75.22.2", "Setor": "SERVI\u00c7O SOCIAL \u2013 AMBULAT\u00d3RIO PEDI\u00c1TRICO", "Telefone": "3027-4710", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:7B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800485"}, {"IP": "10.75.22.4", "Setor": "ADMISS\u00c3O E ALTA", "Telefone": "3027-5310", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:CF", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800527"}, {"IP": "10.75.22.44", "Setor": "PSICOLOGIA \u2013 4\u00ba PISO", "Telefone": "3027-5226", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:A3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800633"}, {"IP": "10.75.22.43", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA M (ONCOLOGIA)", "Telefone": "3027-5210", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:0F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800559"}, {"IP": "10.75.22.6", "Setor": "P\u00d3S OPERAT\u00d3RIO DE ALTA COMPLEXIDADE", "Telefone": "3027-5201", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:89", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800492"}, {"IP": "10.75.22.7", "Setor": "ADMISS\u00c3O E ALTA", "Telefone": "3027-5304", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:CD", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800526"}, {"IP": "10.75.22.12", "Setor": "ULTRASSONOGRAFIA", "Telefone": "3027-5265", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:81", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800488"}, {"IP": "10.75.22.49", "Setor": "RECEP\u00c7\u00c3O \u2013 COORDENA\u00c7\u00c3O", "Telefone": "3027-5247", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:0F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800943"}, {"IP": "10.75.22.14", "Setor": "CIRURGIA ELETIVA", "Telefone": "3027-5320", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:13", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800433"}, {"IP": "10.75.22.13", "Setor": "OPME", "Telefone": "3027-5253", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:95", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800498"}, {"IP": "10.75.22.16", "Setor": "FINANCEIRO", "Telefone": "3027-5297", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6B:FF", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800935"}, {"IP": "10.75.22.15", "Setor": "OUVIDORIA", "Telefone": "3027-5227", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:8B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800493"}, {"IP": "10.75.22.17", "Setor": "CPD", "Telefone": "3027-5205", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:AB", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800509"}, {"IP": "10.75.22.20", "Setor": "DIRETORIA - SECRET\u00c1RIAS", "Telefone": "3027-5300", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:9B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800501"}, {"IP": "10.75.22.19", "Setor": "ASSESSORIA JURIDICA", "Telefone": "3027-5299", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:37", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800451"}, {"IP": "10.75.22.18", "Setor": "FATURAMENTO", "Telefone": "3027-5294", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:09", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800940"}, {"IP": "10.75.22.30", "Setor": "COZINHA - PRODU\u00c7\u00c3O", "Telefone": "3027-5289", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:A7", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800507"}, {"IP": "10.75.22.21", "Setor": "CIHDOTT", "Telefone": "3027-4707", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:3F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800455"}, {"IP": "10.75.22.22", "Setor": "RH", "Telefone": "3027-5296", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:27", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800571"}, {"IP": "10.75.22.23", "Setor": "CENTRAL DA QUALIDADE", "Telefone": "3027-4401", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:9D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800502"}, {"IP": "10.75.22.24", "Setor": "SALA DE MEDICA\u00c7\u00c3O \u2013 II", "Telefone": "3027-4708", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:AD", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800638"}, {"IP": "10.75.22.26", "Setor": "RH", "Telefone": "3027-5298", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:29", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800572"}, {"IP": "10.75.22.28", "Setor": "SALA DE MEDICA\u00c7\u00c3O \u2013 I", "Telefone": "3027-4709", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:83", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800617"}, {"IP": "10.75.22.25", "Setor": "SALA DE MEDICA\u00c7\u00c3O \u2013 III", "Telefone": "3027-5232", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:B1", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800640"}, {"IP": "10.75.22.27", "Setor": "SALA AMARELA", "Telefone": "3027-5233", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:89", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800620"}, {"IP": "10.75.22.34", "Setor": "UAVC", "Telefone": "3027-5302", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:7D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800614"}, {"IP": "10.75.22.32", "Setor": "RECEP\u00c7\u00c3O", "Telefone": "3027-4694", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:77", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800611"}, {"IP": "10.75.22.35", "Setor": "RECEP\u00c7\u00c3O \u2013 ADMINISTRA\u00c7\u00c3O", "Telefone": "3027-5323", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:2F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800575"}, {"IP": "10.75.22.39", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA P (ESPECIALIDADES)", "Telefone": "3027-5209", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:07", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800683"}, {"IP": "10.75.22.38", "Setor": "ESCRITUR\u00c1RIOS \u2013 4\u00ba PISO", "Telefone": "3027-5207", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:05", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800938"}, {"IP": "10.75.22.40", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA O (ESPECIALIDADES)", "Telefone": "3027-5208", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:03", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800681"}, {"IP": "10.75.22.41", "Setor": "FARM\u00c1CIA \u2013 4\u00ba PISO", "Telefone": "3027-5270", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:ED", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800414"}, {"IP": "10.75.22.47", "Setor": "MANUTEN\u00c7\u00c3O PREDIAL \u2013 PLANTONISTAS", "Telefone": "3027-5254", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:15", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800690"}, {"IP": "10.75.22.50", "Setor": "SERVI\u00c7O SOCIAL \u2013 1\u00ba PISO (PSIQUIATRIA)", "Telefone": "3027-5309", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:05", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800426"}, {"IP": "10.75.22.52", "Setor": "LAVANDERIA", "Telefone": "3027-5255", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:09", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800556"}, {"IP": "10.75.22.53", "Setor": "LIMPEZA E HIGIENIZA\u00c7\u00c3O \u2013 L\u00cdDERES PLANTONISTAS", "Telefone": "3027-5261", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6A:05", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800682"}, {"IP": "10.75.22.54", "Setor": "SAVI", "Telefone": "3027-5305", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:31", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800576"}, {"IP": "10.75.22.55", "Setor": "RESSON\u00c2NCIA", "Telefone": "3027-5251", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:13", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800945"}, {"IP": "10.75.22.57", "Setor": "CONSULT\u00d3RIO", "Telefone": "3027-4711", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:11", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800944"}, {"IP": "10.75.22.58", "Setor": "SAD/EMAD", "Telefone": "3027-5259", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:2D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800574"}, {"IP": "10.75.22.59", "Setor": "ESCRITUR\u00c1RIOS \u2013 1\u00ba PISO", "Telefone": "3027-4703", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:07", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800939"}, {"IP": "10.75.22.60", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA C", "Telefone": "3027-5314", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:15", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800946"}, {"IP": "10.75.22.61", "Setor": "HEMOCENTRO \u2013 AMBULAT\u00d3RIO HEMATO RECEP\u00c7\u00c3O", "Telefone": "3027-5223", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:5D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800470"}, {"IP": "10.75.22.64", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA EF (NEUROLOGIA)", "Telefone": "3027-5264", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:19", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800948"}, {"IP": "10.75.22.62", "Setor": "HEMOCENTRO \u2013 SERVI\u00c7O SOCIAL", "Telefone": "3027-5286", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:D3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800401"}, {"IP": "10.75.22.66", "Setor": "LACT\u00c1RIO", "Telefone": "3027-5291", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:0D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800558"}, {"IP": "10.75.22.68", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA G (CLINICA M\u00c9DICA)", "Telefone": "3027-5215", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:1D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800950"}, {"IP": "10.75.22.70", "Setor": "FARM\u00c1CIA \u2013 PS ADULTO", "Telefone": "3027-5322", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:E7", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800411"}, {"IP": "10.75.22.69", "Setor": "HEMOCENTRO \u2013 RECEP\u00c7\u00c3O", "Telefone": "3027-5221", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:E5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800410"}, {"IP": "10.75.22.71", "Setor": "ENDOSCOPIA", "Telefone": "3027-5642", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:E3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800409"}, {"IP": "10.75.22.78", "Setor": "GEST\u00c3O DE CONTRATOS", "Telefone": "3027-4723", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:F3", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800417"}, {"IP": "10.75.22.72", "Setor": "SERVI\u00c7OS DE APOIO", "Telefone": "3027-4700", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:39", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800580"}, {"IP": "10.75.22.75", "Setor": "HEMODINAMICA", "Telefone": "3027-5248", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:5B", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800469"}, {"IP": "10.75.22.76", "Setor": "HEMOCENTRO \u2013 AMBULAT\u00d3RIO ADMINISTRATIVO", "Telefone": "3027-5224", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:4D", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800462"}, {"IP": "10.75.22.79", "Setor": "FARM\u00c1CIA UIR/UAVC/PO-GP", "Telefone": "3027-5283", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:F5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800418"}, {"IP": "10.75.22.80", "Setor": "FARMACIA CENTRO CIRURGICO", "Telefone": "3027-5648", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:67:EB", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800413"}, {"IP": "10.75.22.82", "Setor": "HEMODI\u00c1LISE", "Telefone": "3027-5263", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:57", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800467"}, {"IP": "10.75.22.81", "Setor": "ENGENHARIA CLINICA - PLANTONISTAS", "Telefone": "3027-4702", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:9F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800503"}, {"IP": "10.75.22.88", "Setor": "PATRIM\u00d4NIO", "Telefone": "3027-5220", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:A1", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800504"}, {"IP": "10.75.22.87", "Setor": "PORTARIA", "Telefone": "3027-4400", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:7F", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800615"}, {"IP": "10.75.22.89", "Setor": "COMPRAS", "Telefone": "3027-5287", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:A5", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800506"}, {"IP": "10.75.22.90", "Setor": "SERVI\u00c7O SOCIAL \u2013 PS ADULTO", "Telefone": "3027-5198", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:BB", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800517"}, {"IP": "10.75.22.92", "Setor": "NUCLEO VIGIL\u00c2NCIA EPIDEMIOL\u00d3GICA", "Telefone": "3027-5228", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:55", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800594"}, {"IP": "10.75.22.102", "Setor": "BANCO DE OLHOS - BOTO", "Telefone": "3027-5236", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:68:43", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800457"}, {"IP": "10.75.22.103", "Setor": "ESCRITUR\u00c1RIOS \u2013 2\u00ba PISO", "Telefone": "3027-4695", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:6C:03", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800937"}, {"IP": "10.75.22.99", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA J (ORTOPEDIA)", "Telefone": "3027-5213", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:03", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800553"}, {"IP": "10.75.22.107", "Setor": "COORDENA\u00c7\u00c3O DE ENFERMAGEM", "Telefone": "3027-5230", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:A7", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800635"}, {"IP": "10.75.22.109", "Setor": "UNIDADE DE INTERNA\u00c7\u00c3O \u2013 ALA I (ORTOPEDIA)", "Telefone": "3027-5214", "Status": "ONLINE", "Nome do Produto": "P11G", "MAC": "00:21:F2:5A:69:01", "Hardware": "V1.0.1.1.2.1.1", "Firmware": "FVUI V0.13.9(202601281557)", "Serial": "FLY15225800552"}];
-function filter() {
-    const q = document.getElementById('search').value.toLowerCase();
-    const st = document.getElementById('statusFilter').value;
-    const mo = document.getElementById('modeloFilter').value;
-    document.querySelectorAll('#tbody tr').forEach(r => {
-        const txt = r.textContent.toLowerCase();
-        const status = r.children[3]?.textContent.trim() || '';
-        let show = true;
+const SENHA = "258456";
+let dados = {"data": [], "stats": {} };
+let dadosOriginais = [];
+
+function toast(msg, ok) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.borderColor = ok ? '#22c55e' : '#ef4444';
+    t.className = 'show';
+    setTimeout(() => t.className = '', 3000);
+}
+
+function carregar() {
+    fetch('data.json?_=' + Date.now())
+        .then(r => r.json())
+        .then(j => {
+            dados = j;
+            dadosOriginais = JSON.parse(JSON.stringify(j.data));
+            renderizar();
+        })
+        .catch(() => toast('Erro ao carregar dados', false));
+}
+
+function atualizarStats() {
+    const data = dados.data;
+    const total = data.length;
+    const online = data.filter(r => r.Status === 'ONLINE').length;
+    const offline = data.filter(r => r.Status === 'OFFLINE').length;
+    const setores = new Set(data.map(r => r.Setor)).size;
+    const modelos = new Set(data.map(r => r['Nome do Produto']).filter(Boolean)).size;
+    document.getElementById('totalBadge').textContent = total + ' registros';
+    const items = [
+        {num: total, label:'Total', cls:'blue'},
+        {num: online, label:'Online', cls:'green'},
+        {num: offline, label:'Offline', cls:'red'},
+        {num: setores, label:'Setores', cls:'blue'},
+        {num: modelos, label:'Modelos', cls:'blue'},
+    ];
+    document.getElementById('statsGrid').innerHTML = items.map(s =>
+        '<div class="stat-card"><div class="num ' + s.cls + '">' + s.num + '</div><div class="label">' + s.label + '</div></div>'
+    ).join('');
+}
+
+function renderizar() {
+    atualizarStats();
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = dados.data.map(r => {
+        const sc = (r.Status || '').toLowerCase();
+        return '<tr>' +
+            '<td><a href="http://' + r.IP + '" target="_blank">' + r.IP + '</a></td>' +
+            '<td>' + (r.Setor || '') + '</td>' +
+            '<td>' + (r.Telefone || '') + '</td>' +
+            '<td class="status-' + sc + '">' + (r.Status || '') + '</td>' +
+            '<td>' + (r['Nome do Produto'] || '') + '</td>' +
+            '<td class="mono">' + (r.MAC || '') + '</td>' +
+            '<td class="mono">' + (r.Serial || '') + '</td>' +
+            '<td><div class="actions">' +
+            '<button class="edit-btn" onclick="editar(\'' + r.IP + '\')">Editar</button>' +
+            '<button class="del-btn" onclick="remover(\'' + r.IP + '\')">Remover</button>' +
+            '</div></td></tr>';
+    }).join('');
+    filtrar();
+}
+
+function salvar() {
+    const token = localStorage.getItem('gh_token');
+    const repo = localStorage.getItem('gh_repo') || 'Neguim6/Telefone-Voip-IPS';
+    if (!token) { toast('Configure o token do GitHub primeiro!', false); abrirToken(); return; }
+    if (JSON.stringify(dados.data) === JSON.stringify(dadosOriginais)) { toast('Nenhuma alteração para salvar.', true); return; }
+
+    const btn = document.getElementById('btnSalvar');
+    btn.textContent = 'Salvando...';
+    btn.disabled = true;
+
+    const payload = {
+        data: dados.data,
+        stats: {
+            total: dados.data.length,
+            online: dados.data.filter(r => r.Status === 'ONLINE').length,
+            offline: dados.data.filter(r => r.Status === 'OFFLINE').length,
+            setores_unicos: new Set(dados.data.map(r => r.Setor)).size,
+            modelos: {}
+        },
+        gerado: new Date().toISOString()
+    };
+
+    const url = 'https://api.github.com/repos/' + repo + '/contents/data.json';
+    fetch(url + '?ref=main', {
+        headers: {'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json'}
+    })
+    .then(r => r.json())
+    .then(meta => {
+        const sha = meta.sha;
+        const content = JSON.stringify(payload);
+        return fetch(url, {
+            method: 'PUT',
+            headers: {'Authorization': 'token ' + token, 'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                message: 'Atualiza data.json via site',
+                content: btoa(unescape(encodeURIComponent(content))),
+                sha: sha,
+                branch: 'main'
+            })
+        });
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.content) {
+            toast('Salvo no GitHub! As alterações estarão visíveis em instantes.', true);
+            dadosOriginais = JSON.parse(JSON.stringify(dados.data));
+        } else {
+            toast('Erro: ' + (res.message || 'desconhecido'), false);
+        }
+    })
+    .catch(err => toast('Erro: ' + err.message, false))
+    .finally(() => { btn.textContent = '💾 Salvar'; btn.disabled = false; });
+}
+
+function checkSenha(s) { return s === SENHA; }
+
+function abrirAdicionar() {
+    ['addIp','addSetor','addTel','addModelo','addMac','addSerial','addHardware','addFirmware','addSenha'].forEach(function(id) { document.getElementById(id).value = ''; });
+    document.getElementById('modalAdd').style.display = 'block';
+}
+
+function confirmarAdicao() {
+    if (!checkSenha(document.getElementById('addSenha').value)) { toast('Senha incorreta!', false); return; }
+    var ip = document.getElementById('addIp').value.trim();
+    var setor = document.getElementById('addSetor').value.trim();
+    var tel = document.getElementById('addTel').value.trim();
+    if (!ip || !setor || !tel) { toast('IP, Setor e Telefone são obrigatórios!', false); return; }
+    if (dados.data.some(function(r) { return r.IP === ip; })) { toast('IP já existe!', false); return; }
+    dados.data.push({
+        IP: ip, Setor: setor, Telefone: tel, Status: 'ONLINE',
+        'Nome do Produto': document.getElementById('addModelo').value.trim(),
+        MAC: document.getElementById('addMac').value.trim(),
+        Serial: document.getElementById('addSerial').value.trim(),
+        Hardware: document.getElementById('addHardware').value.trim(),
+        Firmware: document.getElementById('addFirmware').value.trim()
+    });
+    fecharModal('modalAdd');
+    renderizar();
+    toast('Telefone adicionado! Clique em 💾 Salvar para persistir.', true);
+}
+
+function editar(ip) {
+    var r = dados.data.find(function(d) { return d.IP === ip; });
+    if (!r) return;
+    document.getElementById('editIpDisplay').textContent = 'IP: ' + ip;
+    document.getElementById('editSetor').value = r.Setor || '';
+    document.getElementById('editTel').value = r.Telefone || '';
+    document.getElementById('editStatus').value = r.Status || 'ONLINE';
+    document.getElementById('editModelo').value = r['Nome do Produto'] || '';
+    document.getElementById('editMac').value = r.MAC || '';
+    document.getElementById('editSerial').value = r.Serial || '';
+    document.getElementById('editFirmware').value = r.Firmware || '';
+    document.getElementById('editSenha').value = '';
+    document.getElementById('modalEdit').style.display = 'block';
+}
+
+function confirmarEdicao() {
+    if (!checkSenha(document.getElementById('editSenha').value)) { toast('Senha incorreta!', false); return; }
+    var ip = document.getElementById('editIpDisplay').textContent.replace('IP: ','');
+    var r = dados.data.find(function(d) { return d.IP === ip; });
+    if (!r) return;
+    r.Setor = document.getElementById('editSetor').value;
+    r.Telefone = document.getElementById('editTel').value;
+    r.Status = document.getElementById('editStatus').value;
+    r['Nome do Produto'] = document.getElementById('editModelo').value;
+    r.MAC = document.getElementById('editMac').value;
+    r.Serial = document.getElementById('editSerial').value;
+    r.Firmware = document.getElementById('editFirmware').value;
+    fecharModal('modalEdit');
+    renderizar();
+    toast('Telefone atualizado! Clique em 💾 Salvar para persistir.', true);
+}
+
+function remover(ip) {
+    document.getElementById('removeIpDisplay').textContent = ip;
+    document.getElementById('removeSenha').value = '';
+    document.getElementById('modalRemove').style.display = 'block';
+}
+
+function confirmarRemocao() {
+    if (!checkSenha(document.getElementById('removeSenha').value)) { toast('Senha incorreta!', false); return; }
+    var ip = document.getElementById('removeIpDisplay').textContent;
+    dados.data = dados.data.filter(function(r) { return r.IP !== ip; });
+    fecharModal('modalRemove');
+    renderizar();
+    toast('Telefone removido! Clique em 💾 Salvar para persistir.', true);
+}
+
+function configToken() { abrirToken(); }
+function abrirToken() {
+    document.getElementById('inputToken').value = localStorage.getItem('gh_token') || '';
+    document.getElementById('inputRepo').value = localStorage.getItem('gh_repo') || 'Neguim6/Telefone-Voip-IPS';
+    document.getElementById('modalToken').style.display = 'block';
+}
+
+function salvarToken() {
+    var t = document.getElementById('inputToken').value.trim();
+    var r = document.getElementById('inputRepo').value.trim();
+    if (!t || !r) { toast('Preencha token e repositório', false); return; }
+    localStorage.setItem('gh_token', t);
+    localStorage.setItem('gh_repo', r);
+    fecharModal('modalToken');
+    toast('Token salvo!', true);
+}
+
+function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+window.onclick = function(e) {
+    ['modalToken','modalAdd','modalEdit','modalRemove'].forEach(function(id) { if (e.target == document.getElementById(id)) fecharModal(id); });
+};
+
+function filtrar() {
+    var q = document.getElementById('search').value.toLowerCase();
+    var st = document.getElementById('statusFilter').value;
+    var mo = document.getElementById('modeloFilter').value;
+    document.querySelectorAll('#tbody tr').forEach(function(r) {
+        var txt = r.textContent.toLowerCase();
+        var status = r.children[3]?.textContent.trim() || '';
+        var show = true;
         if (q && !txt.includes(q)) show = false;
         if (st && status !== st) show = false;
         if (mo && !txt.includes(mo.toLowerCase())) show = false;
         r.style.display = show ? '' : 'none';
     });
 }
-function sort(n) {
-    const tbody = document.getElementById('tbody');
-    const rows = Array.from(tbody.querySelectorAll('tr'));
-    const dir = tbody.dataset.sort === 'asc' ? 'desc' : 'asc';
+
+function ordenar(n) {
+    var tbody = document.getElementById('tbody');
+    var rows = Array.from(tbody.querySelectorAll('tr'));
+    var dir = tbody.dataset.sort === 'asc' ? 'desc' : 'asc';
     tbody.dataset.sort = dir;
-    rows.sort((a, b) => {
-        const va = a.children[n].textContent.trim();
-        const vb = b.children[n].textContent.trim();
-        const na = parseFloat(va), nb = parseFloat(vb);
+    rows.sort(function(a, b) {
+        var va = a.children[n].textContent.trim();
+        var vb = b.children[n].textContent.trim();
+        var na = parseFloat(va), nb = parseFloat(vb);
         if (!isNaN(na) && !isNaN(nb)) return dir === 'asc' ? na - nb : nb - na;
         return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
     });
-    rows.forEach(r => tbody.appendChild(r));
+    rows.forEach(function(r) { tbody.appendChild(r); });
 }
+
+carregar();
 </script>
 </body>
 </html>
